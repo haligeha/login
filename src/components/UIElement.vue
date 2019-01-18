@@ -86,6 +86,15 @@
             </div>
 
           </div>
+          <div class="pagination-container" align="right">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page.sync="pageInfo.pageCode"
+              :page-size="pageInfo.pageSize"
+              layout=" prev, pager, next"
+              :total="pageInfo.totalPage">
+            </el-pagination>
+          </div>
            <!--  <el-pagination
                small
                @current-change="handleCurrentChange"
@@ -205,7 +214,7 @@
           <span>请选择对巡检日记进行查看或添加</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="handleAdd2(dayobject)">添加</el-button>
-            <el-button type="primary" @click="showDetail(GMTToStr(dayobject.day))">查看</el-button>
+            <el-button type="primary" @click="showDetail(GMTToStr(dayobject.day),pageInfo.pageSize,pageInfo.pageCode)">查看</el-button>
          </span>
         </el-dialog>
         <!--shanchu-->
@@ -261,7 +270,8 @@
         },
         pageInfo:{
           pageCode:1,  //当前页
-          pageSize:3,   //每页显示记录数
+          pageSize:2,   //每页显示记录数
+          totalPage:10   //总记录数
         },
         formLabelWidth: "100px",
       };
@@ -271,7 +281,7 @@
 
     created: function () { // 在vue初始化时调用//
       this.getTempArr();
-
+      this.getTotalPage();
     },
 
     methods: {
@@ -502,7 +512,7 @@
               this.items.push(m);
             }
           },*/
-      showDetail:function(v){
+      showDetail:function(v,pageSize,pageCode){
         var vm=this;
         this.dialogADDVisible=false;
         this.items=[];
@@ -520,6 +530,8 @@
 
         var dataCheck={}
         dataCheck.calendar_date=this.calendar_date;
+        dataCheck.limit=vm.pageInfo.pageSize;
+        dataCheck.page=vm.pageInfo.pageCode-1;
         $.ajax({
           url:"http://10.112.17.185:8100/api/v1/info/inspectionByCalendarDate",
           type:"GET",
@@ -814,9 +826,28 @@
 
         })
         console.log(p+"maya");
-        vm.showDetail(p);
+        vm.showDetail(p,vm.pageSize,vm.pageCode);
+      },
+      handleCurrentChange(val){
+        var vm=this
+        vm.pageInfo.pageCode=val;
+        vm.showDetail(vm.calendar_date,vm.pageInfo.pageSize, vm.pageInfo.pageCode);
+      },
+      getTotalPage(){
+        var vm=this;
+        $.ajax({
+          url:"http://10.112.17.185:8100/api/v1/info/inspection",
+          type:"GET",
+          dataType:"JSON",
+          success:function (msg) {
+            console.log("信息总条数获取成功： "+msg+"条记录")
+            vm.pageInfo.totalPage=msg;
+          },
+          error:function (err) {
+            alert("信息总条数获取失败");
+          }
+        })
       }
-
 
     }
   }

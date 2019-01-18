@@ -142,7 +142,7 @@
         }
       })
       var player3 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://10.112.17.185/oflaDemo/haikang3',
         parentId: '#player3',
         plugins: [RTMP],
         autoPlay: !0,
@@ -257,7 +257,7 @@
 
       record:function(){
         $.ajax({
-          url:"http://10.112.17.185:8083/record?rtmp=rtmp://localhost/oflaDemo/haikang1",
+          url:"http://10.112.17.185:8083/record?rtmp=rtmp://localhost/oflaDemo/haikang4",
           type:"GET",
           success:function (resp) {
             alert(resp);

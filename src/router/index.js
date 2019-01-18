@@ -9,7 +9,7 @@ import UIElement from '@/components/UIElement.vue'
 import Goods from '@/components/Goods.vue'
 import gis from '@/components/gis.vue'
 import DeviceList from '@/components/DeviceList.vue'
-
+import Hi from '@/components/Hi.vue'
 Vue.use(Router);
 
 const router = new Router({
@@ -37,8 +37,8 @@ const router = new Router({
 
         },
         {
-          path: '/hello',
-          component: HelloWorld,
+          path: '/hi',
+          component: Hi,
 
         },
         {
@@ -61,6 +61,10 @@ const router = new Router({
         {
           path: '/gis',
           component: gis
+        },
+        {
+          path:'Table',
+          component:Tables
         },
         {
           path: '/deviceList',

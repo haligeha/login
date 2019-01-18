@@ -576,7 +576,6 @@
             this.handleFilterRange(this.listQuery.activityRange,this.pageInfo.pageSize,this.pageInfo.pageCode);
           }
         }
-
       }
 
     }

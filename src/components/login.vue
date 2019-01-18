@@ -50,9 +50,11 @@
         } else {
           const dataPost= {username:this.loginForm.username,password:this.loginForm.password};
         //  var data = JSON.stringify(dataPost);
-          this.axios({
+           this.axios({
+            contentType: 'application/json; charset=utf-8',
             method: 'post',
             url: '/api/v1/info/login',
+             withCredentials:true,
             dataType:"text",
           //  data: {username:"TenantAdmin@bupt.edu.cn",password:"password"}
             data:dataPost
@@ -62,18 +64,41 @@
             // 将用户token保存到vuex中
            // localStorage.setItem(res.data.tenantId);
             console.log(res.data.tenant_id+"hhh")
-            localStorage.setItem("tenant_id",res.data.tenant_id);
-            localStorage.setItem("auth",res.data.access_token);
-
+            this.setCookie("tenant_id",res.data.tenant_id,7000);
+            this.setCookie("auth",res.data.access_token,7000);
             console.log(_this.userToken+"mmp")
-            _this.changeLogin({ Authorization: _this.userToken });
+          //  _this.changeLogin({ Authorization: _this.userToken });
             _this.$router.push('/home');
+
             alert('登陆成功');
           }).catch(error => {
             alert('账号或密码错误');
             console.log(error);
           });
         }
+      },
+      setCookie: function (cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toUTCString();
+        console.info(cname + "=" + cvalue + "; " + expires);
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+        console.info(document.cookie);
+      },
+      //获取cookie
+      getCookie: function (cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        console.log("获取cookie,现在循环")
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          console.log(c)
+          while (c.charAt(0) == ' ') c = c.substring(1);
+          if (c.indexOf(name) != -1){
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
       }
     }
   };

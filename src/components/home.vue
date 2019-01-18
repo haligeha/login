@@ -24,6 +24,21 @@
           <router-link to="/hello" class="active-menu waves-effect waves-dark"><i class="fa fa-dashboard"></i> 视频</router-link>
         </li>
         <li>
+          <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i> 视频2<span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level">
+
+            <li>
+              <router-link to="/hello">分屏</router-link>
+            </li>
+            <li>
+              <router-link to="/hi">轮询</router-link>
+            </li>
+
+
+              </ul>
+
+            </li>
+        <li>
           <router-link to="/uielement"class="waves-effect waves-dark"><i class="fa fa-desktop"></i> 巡检计划</router-link>
         </li>
         <li>
@@ -79,7 +94,61 @@
 
 <script>
     export default {
-        name: "home",
+      created: function () {
+        this.getSessionId()
+      },
+      methods:{
+        getSessionId:function(){
+          var vm=this;
+          console.log(document.cookie)
+          $.ajax({
+            type: "GET",
+          contentType: "application/json; charset=utf-8",
+            xhrFields: {
+              withCredentials: true
+            },
+            crossDomain: true,
+            //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
+            url: "/api/v1/info/authorize",
+            success: function (msg,res) {
+              console.log(msg)
+              var ses=JSON.parse(msg)
+            //  var session=msg.session
+              var mm=ses.session;
+              console.log(mm)
+              vm.setCookie("JSESSIONID",mm,7000)
+           //  console.log(msg)
+
+            },
+            error: function (err) {
+              alert("加载0000失败");
+            }
+          });
+        },
+        setCookie: function (cname, cvalue, exdays) {
+          var d = new Date();
+          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          var expires = "expires=" + d.toUTCString();
+          console.info(cname + "=" + cvalue + "; " + expires);
+          document.cookie = cname + "=" + cvalue + "; " + expires;
+          console.info(document.cookie);
+        },
+        //获取cookie
+        getCookie: function (cname) {
+          var name = cname + "=";
+          var ca = document.cookie.split(';');
+          console.log("获取cookie,现在循环")
+          for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            console.log(c)
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) != -1){
+              return c.substring(name.length, c.length);
+            }
+          }
+          return "";
+        }
+      }
     }
 </script>
 
