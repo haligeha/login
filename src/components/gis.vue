@@ -76,11 +76,12 @@
     </el-dialog>
 
      <!-- 报警 -->
-     <el-dialog title="报警信息":visible.sync="dialogWarning" @close='handleClose'>
-      <el-table :data="warningTableData">
-        <el-table-column property="id" label="事件ID" width="150"></el-table-column>
+     <el-dialog title="报警信息":visible.sync="dialogWarning" @close='handleClose' width="70%">
+      <el-table :data="warningTableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"  >
+        <el-table-column property="id" label="事件ID" width="70"></el-table-column>
         <el-table-column property="deviceid" label="设备ID" width="200"></el-table-column>
-        <el-table-column property="content" label="描述"></el-table-column>
+        <el-table-column property="content" label="描述" width="200"></el-table-column>
+        <el-table-column property="time" label="时间"></el-table-column>
         <el-table-column property="status" label="状态"></el-table-column>
         <el-table-column property="address" label="操作">
             <template slot-scope="scope">
@@ -89,9 +90,8 @@
         </el-table-column>
       </el-table>
       <div class="block">
-  <el-pagination
-    layout="prev,next">
-  </el-pagination>
+              <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="warningTableData.length" :page-sizes="[5, 10, 100]"  layout="total, sizes, prev, pager, next, jumper" >
+            </el-pagination>
 </div>
 
     <el-dialog title="设备详情":visible.sync="dialogDeviceDetail" append-to-body @close='handleClose'>
@@ -103,6 +103,24 @@
             <el-table-column property="updateValue" label="值"></el-table-column>
           </el-table>
         <h4 >-----控制面板-----</h4>
+        <el-row >
+            <el-col :span="8" v-for="(x,indexs) in control">
+                <el-form >
+                    <span>{{x.serviceName}}({{indexs}})</span>
+                    <el-form  v-for="(w,index) in x.serviceBody.params">
+                          <el-form-item >
+                            <el-col :span="8">{{w.key}}({{index}})</el-col>
+                            <el-col :span="8">
+                                <el-switch v-if="w.type==3" v-model="w.value" ></el-switch>
+                                <el-slider v-if="w.type==2" v-model="w.value" ></el-slider>
+                                <el-input v-if="w.type==1" v-model="w.value" ></el-input>
+                            </el-col>
+                          </el-form-item>                                          
+                    </el-form>
+                    <el-button size="mini" @click="controlConfirm(x,x.serviceBody.params)">确定</el-button>
+                </el-form>
+            </el-col>
+        </el-row>
     </el-dialog>
 
     </el-dialog>
@@ -196,7 +214,7 @@
 <script>
 
 import BMap from 'BMap'
-window.tenantId=2
+window.tenantId=localStorage.getItem("tenant_id")
 window.reqArray=[];
 var idArray=[];
 var logArray=[];
@@ -244,6 +262,11 @@ export default {
 data() {
         return {
             radio: '1',
+            control:'',
+            control1:'',
+            value1:[[]],
+            value2:[[]],
+            value3:[[]],
             pipeColor: null,
             renameMarker:'',
             renameSiteId:'',
@@ -261,6 +284,8 @@ data() {
             dialogDeviceDetail:false,
             form:{},
             websocket: null,
+            currentPage: 1, // 当前页码
+            pageSize: 5 ,// 每页的数据条数
         };
       },
 created(){
@@ -277,6 +302,7 @@ mounted()
 },
   methods: {
      ready: function(){
+        console.log(localStorage.getItem("auth"))
         var vm=this
         window.vm=vm
         console.log(vm)
@@ -1275,62 +1301,162 @@ mounted()
     ////////////////报警设备////////
     warningCheck(row)
     {
+        var abilityType=[]
         console.log(row.deviceid)
-        var req=[
-                    {
-                        "ts": 1530618296493,
-                        "longValue": {
-                            "present": false
-                        },
-                        "doubleValue": {
-                            "present": true
-                        },
-                        "booleanValue": {
-                            "present": false
-                        },
-                        "valueAsString": "588.0",
-                        "strValue": {
-                            "present": false
-                        },
-                        "dataType": "DOUBLE",
-                        "value": 588,
-                        "key": "humidity"
-                    },
-                    {
-                        "ts": 1541065091754,
-                        "longValue": {
-                            "present": true
-                        },
-                        "doubleValue": {
-                            "present": false
-                        },
-                        "booleanValue": {
-                            "present": false
-                        },
-                        "valueAsString": "55",
-                        "strValue": {
-                            "present": false
-                        },
-                        "dataType": "LONG",
-                        "value": 55,
-                        "key": "temperature"
-                    }
-                ]
-        for (var i = 0; i < req.length; i++) {
-              var deviceData = {};
-              deviceData.updateTime = req[i].ts;
-              deviceData.updateKey = req[i].key;
-              deviceData.updateValue = req[i].value;
-              vm.DeviceDetailTableData.push(deviceData);
-              vm.dialogDeviceDetail=true
+        $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: 'api/v1/deviceaccess/data/alllatestdata/'+row.deviceid,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            error:function(err){
+                console.log(err)
+            },
+            success: function(req) {
+                console.log(req)
+                for (var i = 0; i < req.length; i++) {
+                  var deviceData = {};
+                  deviceData.updateTime = req[i].ts;
+                  deviceData.updateKey = req[i].key;
+                  deviceData.updateValue = req[i].value;
+                  vm.DeviceDetailTableData.push(deviceData);
+                  vm.dialogDeviceDetail=true
+                }
+                
             }
+        });
+
+        $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: 'api/v1/deviceaccess/device/2628b0b0-d28e-11e8-b016-ed235ee3b0ad',
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            error:function(err){
+                console.log(err)
+            },
+            success: function(req) {
+                vm.form.dialogDeviceDetail=req.name
+                console.log(req)
+                console.log('/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model)
+                $.ajax({
+                    headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                    url: '/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model,
+                    type: 'get',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    error:function(err){
+                        console.log(err)
+                    },
+                    success: function(req) {
+
+                        console.log(req)
+                        var control=[]
+                        var w1=[[]]
+                        var w2=[[]]
+                        var w3=[[]]
+                        for (var i = 0; i < req.length; i++) {
+                            var abilityDesJson = JSON.parse(req[i].abilityDes);//将所有abilityDes（string）转成JSON
+                            //console.log(abilityDesJson);
+                            control.push(abilityDesJson)
+                            var params = abilityDesJson.serviceBody.params;
+                            vm.control1=params
+                            // console.log(params)
+                            
+                            // for (var j = 0; j < params.length; j++) {
+                            //     console.log(params[j].type)
+                            //     switch(params[j].type)
+                            //     {
+                            //     case 1:
+                            //       var a1=[i,j]
+                             
+                            //       w1.push(a1)
+                            //      console.log(a1)
+                            //       console.log(w1)
+
+                            //       break;
+                            //     case 2:
+                            //        var a2=[i,j]
+                            //        //console.log(a2)
+                                  
+                            //       w2.push(a1)
+                            //       break;
+                            //     case 3:
+                            //       var a3=[i,j]
+                            //       //console.log(a3)
+                                  
+                            //       w3.push(a3)
+                            //     break;
+                            //     }  
+                           
+                            // }
+
+                            
+                        }
+                        // vm.value1=w1
+                        // vm.value2=w2
+                        // vm.value3=w3
+                        // console.log(w1)
+                        // console.log(w2)
+                        // console.log(w3)
+                        // console.log(vm.value1)
+                        // console.log(vm.value2)
+                        // console.log(vm.value3)
+                        vm.control=control
+                        console.log(control)
+                        
+                    }
+                });                
+            }
+        });
+
+        
+    },
+    ///////controlConfirm
+    controlConfirm(e)
+    {
+        console.log(e)
+        console.log(e.serviceBody)
+        var seveice=e
+        console.log(seveice)
+        var json={"serviceName":seveice,"methodName":seveice.methodName}
+        for (var i = 0; i < seveice.params.length; i++) {
+            console.log(seveice.params[i].key)
+            console.log(seveice.params[i].value)
+            json.key="123"
+            json.seveice.params[i].key=seveice.params[i].value
+
+                    // keys.push(e.serviceBody.params[i].key);
+                    // values.push(e.serviceBody.params[i].value);
+                    // // console.log("value"+index+i+":"+valueArr[index][i]);
+                    // // console.log("key"+index+i+":"+keyArr[index][i]);
+                    // var json = '{';
+                    // for (var j = 0; j < keys.length; j++) {
+                    //     json += '"' + keys[j] + '":"' + values[j] + '",';
+                    // }
+                    // json = json.slice(0, json.length - 1);
+                    // json += '}';
+                }
+                console.log(json)
+        // $.ajax({
+        //             url: "/api/v1/deviceaccess/rpc/"+,
+        //             data: json,
+        //             contentType: "application/json; charset=utf-8",//post请求必须
+        //             dataType: "text",
+        //             type: "POST",
+        //             success: function (msg) {
+        //                 toastr.success("应用成功！");
+        //             },
+        //             error: function (err) {
+        //                 toastr.error("应用失败！");
+        //             }
+        //         });
+ 
 
     },
     handleClose(done)
     {
-
         vm.DeviceDetailTableData=[]
-        //done();
     },
 
     ////////////////显示报警信息/////////
@@ -1349,8 +1475,9 @@ mounted()
               warning.id = req[i].id;
               warning.deviceid = req[i].deviceid;
               warning.content = req[i].content.message;
-              warning.status=(req[i].status=="false")?'已处理':"未处理"
-              vm.warningTableData.push(warning);
+              warning.time = new Date(req[i].createdat* 1000).toLocaleString().replace(/:\d{1,2}$/,' ');;
+              warning.status=(req[i].status=="false")?'已查看':"未查看"
+              vm.warningTableData.unshift(warning);
               vm.dialogWarning=true
             }
           },
@@ -1360,8 +1487,58 @@ mounted()
         })
     },
 
+    switchControl()
+    {
+        if(vm.input1=="支持")
+        {
+            console.log(vm.value2)
+        }
+        else
+        {
+            alert("该设备不支持此操作")
+        }
+        
+
+    },
+    rangeControl()
+    {
+        if(vm.input2=="支持")
+        {
+            console.log(vm.value2)
+        }
+        else
+        {
+            alert("该设备不支持此操作")
+        }
+
+    },
+    inputControl()
+    {
+        if(vm.input3=="支持")
+        {
+            console.log(vm.value2)
+        }
+        else
+        {
+            alert("该设备不支持此操作")
+        }
+
+    },
+
+    /////////////分页//////////////
+    handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.currentPage = 1;
+        this.pageSize = val;
+    },
+    handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.currentPage = val;
+    },
+
     ////////////////websocket//////
-    initWebSocket(){ //初始化weosocket 　　　　　　　
+    initWebSocket()
+    { //初始化weosocket 　　　　　　　
 　　　　　　　　const wsuri = "ws://39.104.189.84:8800/api/warning/webSocket";//ws地址
 　　　　　　　　this.websocket = new WebSocket(wsuri);
 　　　　　　　　this.websocket.onopen = this.websocketonopen;
@@ -1370,7 +1547,8 @@ mounted()
 　　　　　　　　this.websocket.onclose = this.websocketclose;
 　　　　   },
 
-　　　　　　websocketonopen() {
+　　　　　　websocketonopen() 
+        {
 　　　　　　　　console.log("WebSocket连接成功");
           var data ={tenantId:tenantId}
           this.websocket.send(JSON.stringify(data))

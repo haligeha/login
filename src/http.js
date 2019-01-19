@@ -7,18 +7,14 @@ import axios from 'axios'
 
 // axios 配置
 axios.defaults.timeout = 5000
-//axios.defaults.baseURL = 'http://10.128.210.216:8086'
-axios.defaults.baseURL = 'http://localhost:8080'
-axios.defaults.crossDomain = true;
-//axios.defaults.crossDomain = true;
-axios.defaults.withCredentials  = true;
+axios.defaults.baseURL = 'http://10.112.17.185:8086'
+
 // http request 拦截器
 // 添加请求拦截器，在请求头中加token
-/*axios.interceptors.request.use(
+axios.interceptors.request.use(
   config => {
     if (localStorage.getItem('Authorization')) {
     //  config.headers.Authorization = localStorage.getItem('Authorization');
-      config.headers.Cookie=
     }
 
     return config;
@@ -44,6 +40,6 @@ axios.interceptors.response.use(
     // console.log(JSON.stringify(error));//console : Error: Request failed with status code 402
     return Promise.reject(error.response.data)
   },
-)*/
-console.log(axios.defaults)
+)
+
 export default axios
