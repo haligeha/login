@@ -30,7 +30,7 @@
 
       </div>
 
-      <div class="pageBody" style="width:100%;height:100%;" :data="reqArray">
+      <div class="pageBody" style="width:100%;height:100%;">
         <div id="allmap"></div>
 
 
@@ -104,20 +104,20 @@
           </el-table>
         <h4 >-----控制面板-----</h4>
         <el-row >
-            <el-col :span="8" v-for="(x,indexs) in control">
+            <el-col :span="8" v-for="(x) in control">
                 <el-form >
-                    <span>{{x.serviceName}}({{indexs}})</span>
+                    <span>{{x.serviceName}}</span>
                     <el-form  v-for="(w,index) in x.serviceBody.params">
                           <el-form-item >
                             <el-col :span="8">{{w.key}}({{index}})</el-col>
                             <el-col :span="8">
-                                <el-switch v-if="w.type==3" v-model="w.value" ></el-switch>
-                                <el-slider v-if="w.type==2" v-model="w.value" ></el-slider>
+                                <el-switch v-if="w.type==2" v-model="w.value" ></el-switch>
+                                <el-slider v-if="w.type==3" v-model="w.value" ></el-slider>
                                 <el-input v-if="w.type==1" v-model="w.value" ></el-input>
                             </el-col>
                           </el-form-item>                                          
                     </el-form>
-                    <el-button size="mini" @click="controlConfirm(x,x.serviceBody.params)">确定</el-button>
+                    <el-button size="mini" @click="controlConfirm(x)">确定</el-button>
                 </el-form>
             </el-col>
         </el-row>
@@ -214,7 +214,6 @@
 <script>
 
 import BMap from 'BMap'
-window.tenantId=localStorage.getItem("tenant_id")
 window.reqArray=[];
 var idArray=[];
 var logArray=[];
@@ -302,13 +301,25 @@ mounted()
 },
   methods: {
      ready: function(){
-        console.log(localStorage.getItem("auth"))
+        // $.ajax({
+        //     type: "GET",
+        //     dataType: "JSON",
+        //     url: "/api1/v1/info/alldevices?limit=4" ,
+        //     success: function (msg) {
+        //       console.log("信息获取成功" + msg)
+        //     },
+        //     error: function (err) {
+        //       alert("信息获取失败");
+        //     }
+        //   })
+
+        window.tenantId=localStorage.getItem("tenant_id")
+        //console.log(localStorage.getItem("auth"))
         var vm=this
         window.vm=vm
         console.log(vm)
         var map = new BMap.Map("allmap",{enableMapClick:false});    // 创建Map实例]
         window.map = map
-        //var markerClusterer
         window.markerClusterer
         map.centerAndZoom(new BMap.Point(116.404, 39.915), 12);  // 初始化地图,设置中心点坐标和地图级别
         //添加地图类型控件
@@ -1040,9 +1051,8 @@ mounted()
               var year=date1.getFullYear();
               var month=date1.getMonth()+1;
               var date=date1.getDate();
-              console.log(idArray[idArray.length-1]+1)
-              var content =addContent(tenantId,idArray[idArray.length-1]+1,msg.name,msg.longtitude,msg.latitude,year,month,date)
-              var marker =addMarkers(idArray[idArray.length-1]+1,msg.longtitude,msg.latitude,true)
+              var content =addContent(tenantId,msg.id,msg.name,msg.longtitude,msg.latitude,year,month,date)
+              var marker =addMarkers(msg.id,msg.longtitude,msg.latitude,true)
               addClickHandler(content,marker);
               //toastr.warning ("添加成功 ");
             },
@@ -1061,37 +1071,37 @@ mounted()
             //vm.dialogrenameSite=true
             console.log(vm.renameSiteId)
             $.ajax({
-                        url: 'http://10.112.17.185:8101/api/v1/map/sites?sitesId='+vm.renameSiteId,
-                        type: 'get',
-                        async : false,
-                        dataType: 'json',
-                        contentType: 'application/json;',
+                url: 'http://10.112.17.185:8101/api/v1/map/sites?sitesId='+vm.renameSiteId,
+                type: 'get',
+                async : false,
+                dataType: 'json',
+                contentType: 'application/json;',
 
-                        error:function(){
-                            toastr.error('失败');
+                error:function(){
+                    toastr.error('失败');
+                },
+                success: function(req) {
+                    console.log(JSON.stringify({id:req.id,name:vm.form.siteNewName,latitude:req.latitude,longtitude:req.longtitude,createdat:req.createdat}))
+                    vm.form.siteOldName=req.name
+                    $.ajax({
+                        url:'http://10.112.17.185:8101/api/v1/map/sites',
+                        data:JSON.stringify({id:req.id,tenantid:tenantId,name:vm.form.siteNewName,latitude:req.latitude,longtitude:req.longtitude,createdat:req.createdat}),
+                        type:'put',//提交方式
+                        //dataType: 'json',
+                        contentType: "application/json",
+
+                        success: function(req){
+                           console.log(req)
+                           window.location.reload();
                         },
-                        success: function(req) {
-                            console.log(JSON.stringify({id:req.id,name:vm.form.siteNewName,latitude:req.latitude,longtitude:req.longtitude,createdat:req.createdat}))
-                            vm.form.siteOldName=req.name
-                            $.ajax({
-                                url:'http://10.112.17.185:8101/api/v1/map/sites',
-                                data:JSON.stringify({id:req.id,tenantid:tenantId,name:vm.form.siteNewName,latitude:req.latitude,longtitude:req.longtitude,createdat:req.createdat}),
-                                type:'put',//提交方式
-                                //dataType: 'json',
-                                contentType: "application/json",
-
-                                success: function(req){
-                                   console.log(req)
-                                   window.location.reload();
-                                },
-                                error:function(error)
-                                {
-                                    console.log(error)
-                                    toastr.error('错误');
-                                }
-                            });
+                        error:function(error)
+                        {
+                            console.log(error)
+                            toastr.error('错误');
                         }
-                       });
+                    });
+                }
+            });
     },
 
     measure()
@@ -1298,166 +1308,6 @@ mounted()
         }
     },
 
-    ////////////////报警设备////////
-    warningCheck(row)
-    {
-        var abilityType=[]
-        console.log(row.deviceid)
-        $.ajax({
-            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: 'api/v1/deviceaccess/data/alllatestdata/'+row.deviceid,
-            type: 'get',
-            dataType: 'json',
-            contentType: 'application/json;charset=UTF-8',
-            error:function(err){
-                console.log(err)
-            },
-            success: function(req) {
-                console.log(req)
-                for (var i = 0; i < req.length; i++) {
-                  var deviceData = {};
-                  deviceData.updateTime = req[i].ts;
-                  deviceData.updateKey = req[i].key;
-                  deviceData.updateValue = req[i].value;
-                  vm.DeviceDetailTableData.push(deviceData);
-                  vm.dialogDeviceDetail=true
-                }
-                
-            }
-        });
-
-        $.ajax({
-            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: 'api/v1/deviceaccess/device/2628b0b0-d28e-11e8-b016-ed235ee3b0ad',
-            type: 'get',
-            dataType: 'json',
-            contentType: 'application/json;charset=UTF-8',
-            error:function(err){
-                console.log(err)
-            },
-            success: function(req) {
-                vm.form.dialogDeviceDetail=req.name
-                console.log(req)
-                console.log('/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model)
-                $.ajax({
-                    headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-                    url: '/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model,
-                    type: 'get',
-                    dataType: 'json',
-                    contentType: 'application/json;charset=UTF-8',
-                    error:function(err){
-                        console.log(err)
-                    },
-                    success: function(req) {
-
-                        console.log(req)
-                        var control=[]
-                        var w1=[[]]
-                        var w2=[[]]
-                        var w3=[[]]
-                        for (var i = 0; i < req.length; i++) {
-                            var abilityDesJson = JSON.parse(req[i].abilityDes);//将所有abilityDes（string）转成JSON
-                            //console.log(abilityDesJson);
-                            control.push(abilityDesJson)
-                            var params = abilityDesJson.serviceBody.params;
-                            vm.control1=params
-                            // console.log(params)
-                            
-                            // for (var j = 0; j < params.length; j++) {
-                            //     console.log(params[j].type)
-                            //     switch(params[j].type)
-                            //     {
-                            //     case 1:
-                            //       var a1=[i,j]
-                             
-                            //       w1.push(a1)
-                            //      console.log(a1)
-                            //       console.log(w1)
-
-                            //       break;
-                            //     case 2:
-                            //        var a2=[i,j]
-                            //        //console.log(a2)
-                                  
-                            //       w2.push(a1)
-                            //       break;
-                            //     case 3:
-                            //       var a3=[i,j]
-                            //       //console.log(a3)
-                                  
-                            //       w3.push(a3)
-                            //     break;
-                            //     }  
-                           
-                            // }
-
-                            
-                        }
-                        // vm.value1=w1
-                        // vm.value2=w2
-                        // vm.value3=w3
-                        // console.log(w1)
-                        // console.log(w2)
-                        // console.log(w3)
-                        // console.log(vm.value1)
-                        // console.log(vm.value2)
-                        // console.log(vm.value3)
-                        vm.control=control
-                        console.log(control)
-                        
-                    }
-                });                
-            }
-        });
-
-        
-    },
-    ///////controlConfirm
-    controlConfirm(e)
-    {
-        console.log(e)
-        console.log(e.serviceBody)
-        var seveice=e
-        console.log(seveice)
-        var json={"serviceName":seveice,"methodName":seveice.methodName}
-        for (var i = 0; i < seveice.params.length; i++) {
-            console.log(seveice.params[i].key)
-            console.log(seveice.params[i].value)
-            json.key="123"
-            json.seveice.params[i].key=seveice.params[i].value
-
-                    // keys.push(e.serviceBody.params[i].key);
-                    // values.push(e.serviceBody.params[i].value);
-                    // // console.log("value"+index+i+":"+valueArr[index][i]);
-                    // // console.log("key"+index+i+":"+keyArr[index][i]);
-                    // var json = '{';
-                    // for (var j = 0; j < keys.length; j++) {
-                    //     json += '"' + keys[j] + '":"' + values[j] + '",';
-                    // }
-                    // json = json.slice(0, json.length - 1);
-                    // json += '}';
-                }
-                console.log(json)
-        // $.ajax({
-        //             url: "/api/v1/deviceaccess/rpc/"+,
-        //             data: json,
-        //             contentType: "application/json; charset=utf-8",//post请求必须
-        //             dataType: "text",
-        //             type: "POST",
-        //             success: function (msg) {
-        //                 toastr.success("应用成功！");
-        //             },
-        //             error: function (err) {
-        //                 toastr.error("应用失败！");
-        //             }
-        //         });
- 
-
-    },
-    handleClose(done)
-    {
-        vm.DeviceDetailTableData=[]
-    },
 
     ////////////////显示报警信息/////////
     showWarning()
@@ -1487,42 +1337,149 @@ mounted()
         })
     },
 
-    switchControl()
+    ////////////////报警设备////////
+    warningCheck(row)
     {
-        if(vm.input1=="支持")
-        {
-            console.log(vm.value2)
-        }
-        else
-        {
-            alert("该设备不支持此操作")
-        }
+        ///////报警状态改变//////////
+        // $.ajax({
+        //     url: 'http://10.112.17.185:8101/api/v1/map/warning?warnId='+row.id,
+        //     type: 'get',
+        //     async : false,
+        //     dataType: 'json',
+        //     contentType: 'application/json;',
+
+        //     error:function(){
+        //         toastr.error('失败');
+        //     },
+        //     success: function(req) {
+        //         console.log(req)
+        //         $.ajax({
+        //             url:'http://10.112.17.185:8101/api/v1/map/warning',
+        //             data:JSON.stringify({id:req.id,tenantid:tenantId,deviceid:req.deviceid,content:req.content,createdat:req.createdat,status:"true"}),
+        //             type:'put',//提交方式
+        //             //dataType: 'json',
+        //             contentType: "application/json",
+
+        //             success: function(req){
+        //                console.log(req)
+        //             },
+        //             error:function(error)
+        //             {
+        //                 console.log(error)
+        //             }
+        //         });
+        //     }
+        // });
+
+        var abilityType=[]
+        console.log(row.deviceid)
+        $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: 'api/v1/deviceaccess/data/alllatestdata/'+row.deviceid,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            error:function(err){
+                console.log(err)
+            },
+            success: function(req) {
+                console.log(req)
+                for (var i = 0; i < req.length; i++) {
+                  var deviceData = {};
+                  deviceData.updateTime = req[i].ts;
+                  deviceData.updateKey = req[i].key;
+                  deviceData.updateValue = req[i].value;
+                  vm.DeviceDetailTableData.push(deviceData);
+                  vm.dialogDeviceDetail=true
+                }
+                
+            }
+        });
+
+        $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: 'api/v1/deviceaccess/device/'+row.deviceid,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            error:function(err){
+                console.log(err)
+            },
+            success: function(req) {
+                vm.form.dialogDeviceDetail=req.name
+                console.log(req)
+                console.log('/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model)
+                $.ajax({
+                    headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                    url: '/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model,
+                    type: 'get',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    error:function(err){
+                        console.log(err)
+                    },
+                    success: function(req) {
+
+                        console.log(req)
+                        var control=[]
+                        for (var i = 0; i < req.length; i++) {
+                            var abilityDesJson = JSON.parse(req[i].abilityDes);//将所有abilityDes（string）转成JSON
+                            //console.log(abilityDesJson);
+                            control.push(abilityDesJson)
+                            var params = abilityDesJson.serviceBody.params;
+                            vm.control1=params
+                            
+                            
+                        }
+                        control.deviceid=row.deviceid;
+                        vm.control=control
+                        console.log(control)
+                        
+                    }
+                });                
+            }
+        });
+
         
+    },
+    ///////controlConfirm
+    controlConfirm(e)
+    {
+        console.log(e)
+        console.log(e.serviceBody)
+        console.log(e.serviceBody.params.length)
+        var json = '{';
+        //var json={"serviceName":e.serviceName,"methodName":e.serviceBody.methodName}
+        for (var i = 0; i < e.serviceBody.params.length; i++) {
+            json += '"' + e.serviceBody.params[i].key + '":"' + e.serviceBody.params[i].value + '",';           
+        }
+        json += '"' + "serviceName" + '":"' + e.serviceName + '",';
+        json += '"' + "methodName" + '":"' + e.serviceBody.methodName+ '"' ;
+        json += '}';
+        console.log(json)
+        var requestId=parseInt(Math.random()*(10000-10+1)+10,10);
+        $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: "/api/v1/deviceaccess/rpc/"+vm.control.deviceid+'/'+requestId,
+            data: json,
+            contentType: "application/json; charset=utf-8",//post请求必须
+            dataType: "text",
+            type: "POST",
+            success: function (req) {
+                console.log(req)
+                alert("控制成功")
+            },
+            error: function (err) {
+                console.log(err)
+                alert("控制失败")
+            }
+        });
+ 
 
     },
-    rangeControl()
+    handleClose(done)
     {
-        if(vm.input2=="支持")
-        {
-            console.log(vm.value2)
-        }
-        else
-        {
-            alert("该设备不支持此操作")
-        }
-
-    },
-    inputControl()
-    {
-        if(vm.input3=="支持")
-        {
-            console.log(vm.value2)
-        }
-        else
-        {
-            alert("该设备不支持此操作")
-        }
-
+        vm.DeviceDetailTableData=[]
     },
 
     /////////////分页//////////////

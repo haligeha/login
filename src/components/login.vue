@@ -60,14 +60,16 @@
             data:dataPost
           }).then(res => {
             console.log(res.data);
+             console.log(res.data.tenantId);
             _this.userToken = res.data.access_token;
             // 将用户token保存到vuex中
-           // localStorage.setItem(res.data.tenantId);
+            localStorage.setItem("tenant_id",res.data.tenant_id);
+            localStorage.setItem("auth",res.data.access_token);
             console.log(res.data.tenant_id+"hhh")
             this.setCookie("tenant_id",res.data.tenant_id,7000);
             this.setCookie("auth",res.data.access_token,7000);
             console.log(_this.userToken+"mmp")
-          //  _this.changeLogin({ Authorization: _this.userToken });
+            _this.changeLogin({ Authorization: _this.userToken });
             _this.$router.push('/home');
 
             alert('登陆成功');
