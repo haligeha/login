@@ -87,6 +87,7 @@
             type: "GET",
             dataType: "JSON",
             //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
+            //@TODO 无代理
             url: "http://10.112.17.185:8083/feedback",
             success: function (msg) {
 

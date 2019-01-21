@@ -259,7 +259,7 @@
             type: "GET",
             dataType: "JSON",
             //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
-            url: "http://10.112.17.185:8100/api/v1/info/entranceWorkByPage",
+            url: "/api/v1/info/entranceWorkByPage",
             data:pageData,
             success: function (msg) {
               console.log("信息获取成功"+msg)
@@ -273,7 +273,7 @@
         getTotalPage(){
           var vm=this;
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWorkCount",
+            url:"/api/v1/info/entranceWorkCount",
             type:"GET",
             dataType:"JSON",
             success:function (msg) {
@@ -313,7 +313,7 @@
           console.log(dataPost);
           var dataPostString = JSON.stringify(dataPost);
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWork",
+            url:"/api/v1/info/entranceWork",
             type:"POST",
             contentType: "application/json;charset=utf-8",
             dataType:"JSON",
@@ -355,7 +355,7 @@
             selectRange.limit=vm.pageInfo.pageSize;
             selectRange.page=vm.pageInfo.pageCode-1;
             $.ajax({
-              url: "http://10.112.17.185:8100/api/v1/info/entranceWorkByRange",
+              url: "/api/v1/info/entranceWorkByRange",
               type: "GET",
               contentType: "application/json",
               dataType: "JSON",
@@ -378,7 +378,7 @@
           var filteredData={};
           filteredData.range=this.listQuery.activityRange
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/workCountByRange",
+            url:"/api/v1/info/workCountByRange",
             type:"GET",
             dataType:"JSON",
             data:filteredData,
@@ -404,7 +404,7 @@
           dataEdit.entranceId=this.transID;
           console.log(dataEdit);
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWorkById",
+            url:"/api/v1/info/entranceWorkById",
             type:"GET",
             contentType:"application/json",
             dataType:"JSON",
@@ -429,7 +429,7 @@
           console.log(this.form);
           var editForm=JSON.stringify(this.form);
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWork",
+            url:"/api/v1/info/entranceWork",
             type:"PUT",
             contentType:"application/json",
             dataType:"JSON",
@@ -455,7 +455,7 @@
           dataGet.entranceId=this.transID;
           console.log(dataGet)
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWorkById",
+            url:"/api/v1/info/entranceWorkById",
             type:"GET",
             contentType:"application/json",
             dataType:"JSON",
@@ -494,7 +494,7 @@
           dataDelete.WorkId=this.transID;
           console.log(dataDelete)
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWorkById?WorkId="+dataDelete.WorkId,
+            url:"/api/v1/info/entranceWorkById?WorkId="+dataDelete.WorkId,
             type:"DELETE",
             contentType:"application/json",
             dataType:"text",
@@ -518,7 +518,7 @@
           dataEvaluate.entranceId=this.transID;
           console.log(dataEvaluate)
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWorkById",
+            url:"/api/v1/info/entranceWorkById",
             type:"GET",
             contentType:"application/json",
             dataType:"JSON",
@@ -542,7 +542,7 @@
           var dataEvaluateString=JSON.stringify(dataEvaluate);
           console.log(dataEvaluate);
           $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/entranceWorkEvaluation",
+            url:"/api/v1/info/entranceWorkEvaluation",
             type:"PUT",
             contentType:"application/json;charset=utf-8",
             dataType:"text",

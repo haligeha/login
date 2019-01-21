@@ -298,7 +298,7 @@
         $.ajax({
           type: "GET",
           dataType: "JSON",
-          url: "http://10.112.17.185:8100/api/v1/info/emergencyByPage",
+          url: " /api/v1/info/emergencyByPage",
           contentType: "application/json;charset=utf-8",
           data: pageData,
           success: function (msg) {
@@ -321,7 +321,7 @@
       getTotalPage() {
         var vm = this;
         $.ajax({
-          url: "http://10.112.17.185:8100/api/v1/info/emergencyCount",
+          url: "/api/v1/info/emergencyCount",
           type: "GET",
           dataType: "JSON",
           success: function (msg) {
@@ -370,7 +370,7 @@
           dataAdd=this.form;
           var dataAddString=JSON.stringify(dataAdd);
         $.ajax({
-            url:"http://10.112.17.185:8100/api/v1/info/emergency",
+            url:"/api/v1/info/emergency",
             type:"POST",
             contentType:"application/json;charset=utf-8",
             dataType:"JSON",
@@ -403,7 +403,7 @@
         var dataDelete = {}
         dataDelete.id = this.transID;
         $.ajax({
-          url: "http://10.112.17.185:8100/api/v1/info/emergency?id="+dataDelete.id,
+          url: "/api/v1/info/emergency?id="+dataDelete.id,
           type: "DELETE",
           contentType: "application/json",
           dataType: "text",

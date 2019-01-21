@@ -86,15 +86,7 @@
             </div>
 
           </div>
-          <div class="pagination-container" align="right">
-            <el-pagination
-              @current-change="handleCurrentChange"
-              :current-page.sync="pageInfo.pageCode"
-              :page-size="pageInfo.pageSize"
-              layout=" prev, pager, next"
-              :total="pageInfo.totalPage">
-            </el-pagination>
-          </div>
+
            <!--  <el-pagination
                small
                @current-change="handleCurrentChange"
@@ -214,7 +206,7 @@
           <span>请选择对巡检日记进行查看或添加</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="handleAdd2(dayobject)">添加</el-button>
-            <el-button type="primary" @click="showDetail(GMTToStr(dayobject.day),pageInfo.pageSize,pageInfo.pageCode)">查看</el-button>
+            <el-button type="primary" @click="showDetail(GMTToStr(dayobject.day))">查看</el-button>
          </span>
         </el-dialog>
         <!--shanchu-->
@@ -256,7 +248,7 @@
         items: [],
         arrDate: [10, 15],
         isShow: false,
-        getUrl: 'http://10.112.17.185:8100/api/v1/info/allReport',
+  //      getUrl: 'http://10.112.17.185:8100/api/v1/info/allReport',
         form: {
           id: undefined,
           duty_person: '',
@@ -268,11 +260,7 @@
           abnormal: '',
           maintenance: ''
         },
-        pageInfo:{
-          pageCode:1,  //当前页
-          pageSize:2,   //每页显示记录数
-          totalPage:10   //总记录数
-        },
+
         formLabelWidth: "100px",
       };
 
@@ -281,7 +269,6 @@
 
     created: function () { // 在vue初始化时调用//
       this.getTempArr();
-      this.getTotalPage();
     },
 
     methods: {
@@ -305,7 +292,7 @@
           type: "GET",
           dataType: "JSON",
           //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
-          url: "http://10.112.17.185:8100/api/v1/info/allReport",
+          url: "/api/v1/info/allReport",
           success: function (msg) {
             console.log("hello");
             vm.tempArr=msg;
@@ -329,16 +316,25 @@
           date = new Date(cur)
         } else {
           var now = new Date()
-          var d = new Date(now.getFullYear(), now.getMonth(), 1)
+       if(now.getMonth()===0){
+         var d = new Date(this.formatDate(now.getFullYear()-1, 12, 1))
+         d.setDate(42)
+         date = new Date(this.formatDate(d.getFullYear(), d.getMonth() + 1, 1))
+          }
+          else{
+          var d = new Date(this.formatDate(now.getFullYear(), now.getMonth(), 1))
+
           d.setDate(42)
-          date = new Date(this.formatDate(d.getFullYear(), d.getMonth(), 1))
-        }
+          date = new Date(this.formatDate(d.getFullYear(), d.getMonth()+1, 1))
+         }
+      }
+        console.log("223333333" + "    " + date);
         this.currentDay = date.getDate()
 
         this.currentYear = date.getFullYear()
 
         this.currentMonth = date.getMonth() + 1
-        console.log("223333333" + "    " + this.currentMonth);
+
         this.currentWeek = date.getDay() // 1...6,0
 
         if (this.currentWeek === 0) {
@@ -418,11 +414,9 @@
           var D = date.getDate();
           return Y + M + D
         };
-        console.log(this.tempArr.length+"1222222222");
+
         for (var i = 0; i < this.tempArr.length; i++) {
-          console.log(this.tempArr.length+"1222222222");
-          console.log(this.tempArr[i].calendar_date + "this.tempArr[0]......");
-          console.log(v + "this.tempArr[0]");
+
           if ( TimestampToTime(this.tempArr[i].calendar_date) === v) {
 
             temp = {flag: true, arrList: this.tempArr[i]}
@@ -443,6 +437,7 @@
         // setDate(-1); 上月倒数第二天
         // setDate(dx) 参数dx为 上月最后一天的前后dx天
         var d = new Date(this.formatDate(year, month, 1))
+      //  d.setDate(42)
         d.setDate(0)
         this.initData(this.formatDate(d.getFullYear(), d.getMonth() + 1, 1))
       },
@@ -512,7 +507,7 @@
               this.items.push(m);
             }
           },*/
-      showDetail:function(v,pageSize,pageCode){
+      showDetail:function(v){
         var vm=this;
         this.dialogADDVisible=false;
         this.items=[];
@@ -524,16 +519,14 @@
             return Str
           }
           this.calendar_date=GMTToStr(v)*/
-        this.calendar_date=v;
-        console.log(this.calendar_date+"bengbengbeng ")
-        this.calendar_date=Math.round(new Date(this.calendar_date).getTime()/1000).toString();
+        vm.calendar_date=v;
+        console.log(vm.calendar_date+"bengbengbeng ")
+        vm.calendar_date=Math.round(new Date(vm.calendar_date).getTime()/1000).toString();
 
         var dataCheck={}
-        dataCheck.calendar_date=this.calendar_date;
-        dataCheck.limit=vm.pageInfo.pageSize;
-        dataCheck.page=vm.pageInfo.pageCode-1;
+        dataCheck.calendar_date=vm.calendar_date;
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspectionByCalendarDate",
+          url:"/api/v1/info/inspectionByCalendarDate",
           type:"GET",
           //   contentType:"application/json",
           dataType:"JSON",
@@ -574,7 +567,7 @@
         console.log(dataPost);
         var dataPostString = JSON.stringify(dataPost);
         $.ajax({
-          url: "http://10.112.17.185:8100/api/v1/info/inspection",
+          url: "/api/v1/info/inspection",
           type: "POST",
           contentType: "application/json;charset=utf-8",
           dataType: "text",
@@ -640,7 +633,7 @@
         dataCheck.reportId=this.transID;
         console.log(dataCheck);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspectionById",
+          url:"/api/v1/info/inspectionById",
           type:"GET",
           //   contentType:"application/json",
           dataType:"JSON",
@@ -705,7 +698,7 @@
         dataEdit.reportId=this.transID;
         console.log(dataEdit);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspectionById",
+          url:"/api/v1/info/inspectionById",
           type:"GET",
           //   contentType:"application/json",
           dataType:"JSON",
@@ -751,7 +744,7 @@
         var reportInfo=JSON.stringify(dataPost);
         console.log(reportInfo+"sing a song")
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspection",
+          url:"/api/v1/info/inspection",
           type:"PUT",
           contentType:"application/json",
           dataType:"JSON",
@@ -785,7 +778,7 @@
         dataEdit.reportId=this.transID;
         console.log(dataEdit);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspectionById",
+          url:"/api/v1/info/inspectionById",
           type:"GET",
           //   contentType:"application/json",
           dataType:"JSON",
@@ -808,7 +801,7 @@
         console.log(this.calendar_date+"mmmaaaa")
         var p=this.calendar_date;
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspectionId?inspectionId="+dataDelete.inspectionId,
+          url:"/api/v1/info/inspectionId?inspectionId="+dataDelete.inspectionId,
           type:"DELETE",
           contentType:"application/json",
           dataType:"text",
@@ -826,28 +819,9 @@
 
         })
         console.log(p+"maya");
-        vm.showDetail(p,vm.pageSize,vm.pageCode);
+        vm.showDetail(p);
       },
-      handleCurrentChange(val){
-        var vm=this
-        vm.pageInfo.pageCode=val;
-        vm.showDetail(vm.calendar_date,vm.pageInfo.pageSize, vm.pageInfo.pageCode);
-      },
-      getTotalPage(){
-        var vm=this;
-        $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/inspection",
-          type:"GET",
-          dataType:"JSON",
-          success:function (msg) {
-            console.log("信息总条数获取成功： "+msg+"条记录")
-            vm.pageInfo.totalPage=msg;
-          },
-          error:function (err) {
-            alert("信息总条数获取失败");
-          }
-        })
-      }
+
 
     }
   }

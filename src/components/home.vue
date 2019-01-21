@@ -109,7 +109,7 @@
             },
             crossDomain: true,
             //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
-            url: "/api/v1/info/authorize",
+            url: "/api/v1/user/authorize",
             success: function (msg,res) {
               console.log(msg)
               var ses=JSON.parse(msg)

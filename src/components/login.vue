@@ -53,7 +53,7 @@
            this.axios({
             contentType: 'application/json; charset=utf-8',
             method: 'post',
-            url: '/api/v1/info/login',
+            url: '/api/v1/user/login',
              withCredentials:true,
             dataType:"text",
           //  data: {username:"TenantAdmin@bupt.edu.cn",password:"password"}

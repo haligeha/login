@@ -326,7 +326,7 @@
         $.ajax({
           type:"GET",
           dataType:"JSON",
-          url:"http://10.112.17.185:8100/api/v1/info/suppliesByPage",
+          url:"/api/v1/info/suppliesByPage",
           contentType:"application/json;charset=utf-8",
           data:pageData,
           success:function (msg) {
@@ -343,7 +343,7 @@
       getTotalPage(){
         var vm=this;
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/suppliesCount",
+          url:"/api/v1/info/suppliesCount",
           type:"GET",
           dataType:"JSON",
           success:function (msg) {
@@ -405,7 +405,7 @@
         dataAdd.location=this.form.location;
         var dataAddString=JSON.stringify(dataAdd);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/supplies",
+          url:"/api/v1/info/supplies",
           type:"POST",
           contentType:"application/json;charset=utf-8",
           dataType:"JSON",
@@ -430,7 +430,7 @@
         var dataEdit={};
         dataEdit.supplyId=this.transID;
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/supplies",
+          url:"/api/v1/info/supplies",
           type:"GET",
           contentType:"application/json",
           dataType:"JSON",
@@ -449,7 +449,7 @@
         console.log(this.form)
         var editForm=JSON.stringify(this.form);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/supplies",
+          url:"/api/v1/info/supplies",
           type:"PUT",
           dataType:"JSON",
           contentType:"application/json",
@@ -476,7 +476,7 @@
         var dataDelete={}
         dataDelete.id=this.transID;
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/supplies?id="+dataDelete.id,
+          url:"/api/v1/info/supplies?id="+dataDelete.id,
           type:"DELETE",
           contentType:"application/json",
           dataType:"text",

@@ -184,6 +184,7 @@
       up: function () {
         $.ajax({
           // url:"http://10.128.210.216:8083/control?cmd=up&status=0",
+          //@TODO
           url: "http://10.112.17.185:8083/control?cmd=up&status=0",
           type: "GET",
 
