@@ -26,6 +26,7 @@
         <!--<el-button type="primary" onclick="showFrame()">设备搜索</el-button>-->
         <el-button type="primary" @click="showWarning">查看报警事件</el-button>
         <el-button type="primary" @click="dialogDraw=true">绘制功能</el-button>
+        <el-button type="primary" @click="trackAll">历史巡检线路</el-button>
         </ol>
 
       </div>
@@ -93,7 +94,7 @@
         </el-table-column>
       </el-table>
       <div class="block">
-              <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="warningTableData.length" :page-sizes="[5, 10, 100]"  layout="total, sizes, prev, pager, next, jumper" >
+              <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="warningTableData.length" :page-size="pageSize":page-sizes="pageSizes"  layout="total, sizes, prev, pager, next, jumper" >
             </el-pagination>
         </div>
 
@@ -209,7 +210,25 @@
             </el-table-column>
         </el-table>
         <div class="block">
-            <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="siteTableData.length" :page-sizes="[5, 10, 100]"  layout="total, sizes, prev, pager, next, jumper" >
+            <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="siteTableData.length" :page-size="pageSize" :page-sizes="pageSizes"  layout="total, sizes, prev, pager, next, jumper" >
+            </el-pagination>
+        </div>
+    </el-dialog>
+
+    <el-dialog title="历史巡检线路":visible.sync="dialogTrackAll" @close='handleClose' width="50%">
+        <el-table :data="trackAllTableData.slice((currentPage-1)*pageSize,currentPage*pageSize)">
+            <el-table-column label="线路ID" prop="id" ></el-table-column>
+            <el-table-column label="用户ID" prop="tenantid" ></el-table-column>
+            <el-table-column label="巡检人员名称" prop="stuffName"></el-table-column>
+            <el-table-column label="创建时间" prop="createdat" width="200"></el-table-column>
+            <el-table-column>
+                <template slot-scope="scope">
+                    <el-button size="mini" @click="trackCheck(scope.row.id)">查看线路</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="block">
+            <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="trackAllTableData.length" :page-size="pageSize":page-sizes="pageSizes"  layout="total, sizes, prev, pager, next, jumper" >
             </el-pagination>
         </div>
     </el-dialog>
@@ -283,6 +302,7 @@ data() {
             warningTableData:[],
             DeviceDetailTableData:[],
             SiteDeviceTableData:[],
+            trackAllTableData:[],
             dialogDraw: false,
             dialogAddVisible:false,
             dialogWarning:false,
@@ -290,10 +310,12 @@ data() {
             dialogrenameSite:false,
             dialogSiteDevice:false,
             dialogDeviceDetail:false,
+            dialogTrackAll:false,
             form:{},
             websocket: null,
             currentPage: 1, // 当前页码
             pageSize: 5 ,// 每页的数据条数
+            pageSizes:[5, 10, 100]
         };
       },
 created(){
@@ -624,7 +646,7 @@ mounted()
         }
        });
 
-   $.ajax({
+    $.ajax({
         url: '/api/v1/map/patroltrackAll',
         type: 'get',
         async : false,
@@ -1518,6 +1540,60 @@ mounted()
 
     },
 
+    ///////巡检线路///////////
+    trackAll()
+    {
+        vm.trackAllTableData=[]
+        $.ajax({
+            url: "http://10.112.17.185:8101/api/v1/map/trackAll",
+            contentType: "application/json; charset=utf-8",//post请求必须
+            dataType: "json",
+            type: "get",
+            success: function (req) {
+                console.log(req)
+                for (var i = 0; i < req.length; i++) {
+                      var track = {};
+                      track.id = req[i].id;
+                      track.stuffName = req[i].staffname;
+                      track.tenantid = req[i].tenantid;   
+                      track.createdat = vm.timestamp(req[i].createdat);
+                      vm.trackAllTableData.unshift(track);                      
+                }
+                vm.dialogTrackAll=true
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    },
+    trackCheck(row)
+    {
+        $.ajax({
+            url: "http://10.112.17.185:8101/api/v1/map/track?trackId="+row,
+            contentType: "application/json; charset=utf-8",//post请求必须
+            dataType: "json",
+            type: "get",
+            success: function (result) {
+                vm.dialogTrackAll=false
+                console.log(result)
+                var polylinePointSum=result.drawpoint.point
+                var drawPoint=[]
+                for(var i=0;i<polylinePointSum.length;i++)
+                { 
+                    var polylinePoint=new BMap.Point(polylinePointSum[i].lng,polylinePointSum[i].lat)
+                    drawPoint.push(polylinePoint)
+                    //console.log(drawPoint)
+                }
+                var polyline = new BMap.Polyline(drawPoint);
+                map.addOverlay(polyline);         
+                map.setViewport(polyline.getBounds());
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    },
+
     handleClose(done)
     {
         vm.DeviceDetailTableData=[]
@@ -1639,7 +1715,8 @@ mounted()
     websocketsend(agentData){//数据发送
 　　　　　　　this.websocket.send(agentData);
 　　　},
-    websocketclose(e){ //关闭
+    websocketclose(e)
+    { //关闭
        console.log("connection closed (" + e.code + ")");　　　　
 　　　},
 
