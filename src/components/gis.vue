@@ -83,16 +83,19 @@
         <el-table-column property="content" label="描述" width="200"></el-table-column>
         <el-table-column property="time" label="时间"></el-table-column>
         <el-table-column property="status" label="状态"></el-table-column>
-        <el-table-column property="address" label="操作">
+        <el-table-column property="address" label="操作" align="right" width="230">
             <template slot-scope="scope">
-                <el-button size="mini" @click="warningCheck(scope.row)">站点设备</el-button>
+                <el-button size="mini" type="success" @click="warningChange(scope.row)">改变状态</el-button>
+                <el-button size="mini" type="primary" @click="deviceCheck(scope.row.deviceid)">查看详情</el-button>
+                <el-button size="mini" type="warning" @click="videoCkeck(scope.row)">查看视频</el-button>
+                <el-button size="mini" type="danger"  @click="informAPP(scope.row)">通知人员</el-button>               
             </template>
         </el-table-column>
       </el-table>
       <div class="block">
               <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="warningTableData.length" :page-sizes="[5, 10, 100]"  layout="total, sizes, prev, pager, next, jumper" >
             </el-pagination>
-</div>
+        </div>
 
     <el-dialog title="设备详情":visible.sync="dialogDeviceDetail" append-to-body @close='handleClose'>
         <el-input v-model="form.dialogDeviceDetail" :disabled="true" size="mini"></el-input>
@@ -112,7 +115,7 @@
                             <el-col :span="8">{{w.key}}({{index}})</el-col>
                             <el-col :span="8">
                                 <el-switch v-if="w.type==2" v-model="w.value" ></el-switch>
-                                <el-slider v-if="w.type==3" v-model="w.value" ></el-slider>
+                                <el-input v-if="w.type==3" v-model="w.value" type="number"></el-input>
                                 <el-input v-if="w.type==1" v-model="w.value" ></el-input>
                             </el-col>
                           </el-form-item>                                          
@@ -127,21 +130,21 @@
 
 
     <!-- 站点设备 -->
-    <el-dialog title="站点设备":visible.sync="dialogSiteDevice" @close='handleClose'>
+    <el-dialog title="站点设备":visible.sync="dialogSiteDevice" @close='handleClose' width="60%">
       <el-table :data="SiteDeviceTableData">
-        <el-table-column property="id" label="设备ID" ></el-table-column>
+        <el-table-column property="id" label="设备ID" width="250"></el-table-column>
         <el-table-column property="deviceName" label="设备名称" ></el-table-column>
         <el-table-column property="deviceType" label="设备类型"></el-table-column>
-        <el-table-column property="deviceTime" label="创建时间"></el-table-column>
+        <el-table-column property="deviceTime" label="创建时间" width="200"></el-table-column>
         <el-table-column property="address" label="操作">
             <template slot-scope="scope">
-                <el-button size="mini" @click="check(scope.row)">设备属性</el-button>
+                <el-button size="mini" @click="deviceCheck(scope.row.id)">查看详情</el-button>
             </template>
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="prePage">上一页</el-button>
-        <el-button type="primary" @click="nextPage">下一页</el-button>
+        <el-button type="primary" @click="nextPage()">下一页</el-button>
       </div>
     </el-dialog>
 
@@ -195,16 +198,20 @@
 
     <!-- ///////框选////// -->
     <el-dialog title="框选搜索":visible.sync="dialogframeSelection" @close='handleClose'>
-        <el-table :data="siteTableData" style="width: 98%;left:20px">
-        <el-table-column label="站点ID" prop="id" ></el-table-column>
-        <el-table-column label="站点名" prop="siteName"></el-table-column>
-        <el-table-column label="创建时间" prop="createdat"></el-table-column>
-        <el-table-column>
-            <template slot-scope="scope">
-                <el-button size="mini" @click="check(true,scope.row)">站点设备</el-button>
-            </template>
-        </el-table-column>
-      </el-table>
+        <el-table :data="siteTableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: 98%;">
+            <el-table-column label="站点ID" prop="id" ></el-table-column>
+            <el-table-column label="站点名" prop="siteName"></el-table-column>
+            <el-table-column label="创建时间" prop="createdat"></el-table-column>
+            <el-table-column>
+                <template slot-scope="scope">
+                    <el-button size="mini" @click="check(true,scope.row)">站点设备</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="block">
+            <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage":total="siteTableData.length" :page-sizes="[5, 10, 100]"  layout="total, sizes, prev, pager, next, jumper" >
+            </el-pagination>
+        </div>
     </el-dialog>
 
 </div>
@@ -212,7 +219,10 @@
 </template>
 
 <script>
-
+import { Message } from 'element-ui';
+import { MessageBox } from 'element-ui';
+import { Notification } from 'element-ui';
+import warnIcon from '../../static/baidu/img/008h.gif'; //以import的方式导入图片文件
 import BMap from 'BMap'
 window.reqArray=[];
 var idArray=[];
@@ -257,15 +267,14 @@ var preDeviceId = [];//用于查找上一页
 var preDeviceName = [];//用于查找上一页
 var pageNum = 1;//记录当前页面
 export default {
+filters:{
+    
+  },
 
 data() {
         return {
             radio: '1',
             control:'',
-            control1:'',
-            value1:[[]],
-            value2:[[]],
-            value3:[[]],
             pipeColor: null,
             renameMarker:'',
             renameSiteId:'',
@@ -372,13 +381,13 @@ mounted()
         window.getSites=function()
         {
             $.ajax({
-                url: 'http://10.112.17.185:8101/api/v1/map/sitesAll',
+                url: '/api/v1/map/sitesAll',
                 type: 'get',
                 async : false,
                 dataType: 'json',
                 contentType: 'application/json;charset=UTF-8',
-                error:function(){
-                    toastr.warning('失败');
+                error:function(err){
+                    console.log(err)
                 },
                 success: function(req) {
                     //请求成功时处理
@@ -423,9 +432,11 @@ mounted()
 
         //////////////////////////////删除站点//////////////////////////////
         function removeMarker(e,ee,marker){
-            var mymessage=confirm("确认删除站点？");
-            if(mymessage==true)
-            {
+            MessageBox.confirm('确认删除站点?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
                 console.log(marker.point);
                 console.log(reqArray)
                 for(var i=0;i<reqArray.length;i++)
@@ -436,14 +447,12 @@ mounted()
                         map.removeOverlay(marker);
                         markerClusterer.removeMarker(marker); //删除标记从聚合点中删除
                         $.ajax({
-                            url:'http://10.112.17.185:8101/api/v1/map/sites/?sitesId='+reqArray[i].id,
+                            url:'/api/v1/map/sites/?sitesId='+reqArray[i].id,
                             type:'DELETE',//提交方式
                             dataType:'JSON',//返回字符串，T大写
                             success: function(req)
                             {
-
-                                toastr.warning('删除成功');
-
+                                Message.success({message: '删除成功'}); 
                             },
                             error:function(error)
                             {
@@ -456,12 +465,10 @@ mounted()
                         });
                     }
                 }
+            }).catch(() => {
+              Message({message: '已取消删除'});            
+            });
 
-            }
-            else if(mymessage==false)
-            {
-
-            }
         }
 
                 /////////////修改////////////////
@@ -487,7 +494,7 @@ mounted()
 
         };
 
-        window.addContent=function (tenantId,id,name,longtitude,latitude,year,month,date)
+        window.addContent=function (tenantId,id,name,longtitude,latitude,date)
         {
                 var content =
                             '<div >'+
@@ -516,7 +523,7 @@ mounted()
                             '</tr>'+
                             '<tr>'+
                             '<td>'+'创建时间:'+'</td>'+
-                            '<td>'+year+'-'+month+'-'+date+'</td>'+
+                            '<td>'+date+'</td>'+
                             '</tr>'+
                             '</table> '
                             //+'<input type="button" id="addModel" value="上传场景" onclick="addModel()" />'+'&nbsp;&nbsp;&nbsp;&nbsp;'
@@ -556,13 +563,12 @@ mounted()
         }
 
         $.ajax({
-        url: 'http://10.112.17.185:8101/api/v1/map/sitesAll',
+        url: '/api/v1/map/sitesAll',
         type: 'get',
         async : false,
         dataType: 'json',
         error:function(error){
             console.log(error)
-            toastr.warning('失败');
         },
         success: function(req) {
             console.log(req);
@@ -577,13 +583,10 @@ mounted()
                 logArray.push(req[i].longtitude);
                 lohArray.push(req[i].latitude);
                 nameArray.push(req[i].name);
-                 var date1=new Date(req[i].createdat);
-                 var year=date1.getFullYear();
-                 var month=date1.getMonth()+1;
-                 var date=date1.getDate();
-                 var content =addContent(tenantId,req[i].id,req[i].name,req[i].longtitude,req[i].latitude,year,month,date)
-                 var marker =addMarkers(req[i].id,req[i].longtitude,req[i].latitude)
-                 addClickHandler(content,marker);
+                var date=vm.timestamp(req[i].createdat)
+                var content =addContent(tenantId,req[i].id,req[i].name,req[i].longtitude,req[i].latitude,date)
+                var marker =addMarkers(req[i].id,req[i].longtitude,req[i].latitude)
+                addClickHandler(content,marker);
 
             }
              markerClusterer = new BMapLib.MarkerClusterer(map, {markers:markers});
@@ -593,14 +596,14 @@ mounted()
 //////////////管廊显示///////////
 
     $.ajax({
-        url: 'http://10.112.17.185:8101/api/v1/map/pipeAll',
+        url: '/api/v1/map/pipeAll',
         type: 'get',
         async : false,
         dataType: 'json',
         contentType: 'application/json;',
 
         error:function(){
-            toastr.error('失败');
+            Message.error({message: '获取管廊失败'}); 
         },
         success: function(req) {
             console.log(req)
@@ -610,7 +613,7 @@ mounted()
                 pipeColorArray.push(req[i].pipecolor);
                 pipeWidthArray.push(req[i].pipewidth);
                 pipeTypeArray.push(req[i].pipetype);
-                pipeDataArray.push(new Date(req[i].createdat));
+                pipeDataArray.push(vm.timestamp(req[i].createdat));
                 //console.log($.parseJSON(req.pipes[i].drawpoint).point)
                 console.log(req[i].drawpoint.point)
                 polylinePointSum.push(req[i].drawpoint.point);
@@ -622,14 +625,14 @@ mounted()
        });
 
    $.ajax({
-        url: 'http://10.112.17.185:8101/api/v1/map/patroltrackAll',
+        url: '/api/v1/map/patroltrackAll',
         type: 'get',
         async : false,
         dataType: 'json',
         contentType: 'application/json;',
 
         error:function(){
-            toastr.error('失败');
+            Message.error({message: '获取巡检线路失败'});  
         },
         success: function(req) {
             //console.log(req)
@@ -639,7 +642,7 @@ mounted()
                 trackpipeColorArray.push(req[i].pipecolor);
                 trackpipeWidthArray.push(req[i].pipewidth);
                 trackpipeTypeArray.push(req[i].pipetype);
-                trackpipeDataArray.push(new Date(req[i].createdat));
+                trackpipeDataArray.push(vm.timestamp(req[i].createdat));
                 //console.log($.parseJSON(req.pipes[i].drawPoint).point)
                 trackpolylinePointSum.push(req[i].drawpoint.point);
         }
@@ -681,13 +684,10 @@ mounted()
                         openInfo(content,e)
                         openIfoID=marker;
                         });
-                    marker.addEventListener("dbclick",function(){
-                        alert('1')
-                        });
                 }
 
                 var opts = {
-                    width : 100,     // 信息窗口宽度
+                    width : 150,     // 信息窗口宽度
                     height: 50,     // 信息窗口高度
                     enableAutoPan:true,
                     enableMessage:true//设置允许信息窗发送短息
@@ -707,7 +707,7 @@ mounted()
                             '</tr>'+
                             '<tr>'+
                             '<td>'+'创建时间:'+'</td>'+
-                            '<td>'+pipeDataArray[i].getFullYear()+'-'+(pipeDataArray[i].getMonth()+1)+'-'+pipeDataArray[i].getDate()+'</td>'+
+                            '<td>'+pipeDataArray[i]+
                             '</tr>'+
                             '</table> '
                 //起点
@@ -739,9 +739,11 @@ mounted()
 
                 //////////////////////////////删除站点//////////////////////////////
                 function removePolyline(e,ee,polyline){
-                    var mymessage=confirm("确认删除站点？");
-                    if(mymessage==true)
-                    {
+                    MessageBox.confirm('确认删除管廊?', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(() => {
                         for(i=0;i<polylinePointSum.length;i++)
                         {
                             if(JSON.stringify(polylinePointSum[i]) == JSON.stringify(polyline.getPath()))
@@ -751,25 +753,31 @@ mounted()
                         }
                         console.log('http://10.112.17.185:8101/api/v1/map/pipe?pipeId='+idSign)
                         $.ajax({
-                        url: 'http://10.112.17.185:8101/api/v1/map/pipe?pipeId='+idSign,
-                        type: 'delete',
-                        //dataType: 'json',
-                        //contentType: 'application/json;',
-                        error:function(error){
-                            console.log(error)
-                            toastr.error('删除失败');
-                        },
-                        success: function(req) {
-                            //toastr.warning('修改完成')
-                            window.location.reload();
-                        }
+                            url: '/api/v1/map/pipe?pipeId='+idSign,
+                            type: 'delete',
+                            //dataType: 'json',
+                            //contentType: 'application/json;',
+                            error:function(error){
+                                console.log(error)
+                                toastr.error('删除失败');
+                            },
+                            success: function(req) {
+                                //toastr.warning('修改完成')
+                                window.location.reload();
+                            }
+                        });
+                    }).catch(() => {
+                      Message({message: '已取消删除'});            
                     });
-                    }
-                    else if(mymessage==false)
-                    {
+                    // var mymessage=confirm("确认删除站点？");
+                    // if(mymessage==true)
+                    // {
+                        
+                    // }
+                    // else if(mymessage==false)
+                    // {
 
-                    }
-
+                    // }
                 }
                 function alterPolyline(e,ee,polyline){
                     polyline.enableEditing()
@@ -785,14 +793,14 @@ mounted()
                 function savePolyline(e,ee,polyline){
                     polyline.disableEditing()
                        $.ajax({
-                            url: 'http://10.112.17.185:8101/api/v1/map/pipe?pipeId='+idSign,
+                            url: '/api/v1/map/pipe?pipeId='+idSign,
                             type: 'get',
                             async : false,
                             dataType: 'json',
                             contentType: 'application/json;',
 
                             error:function(){
-                                toastr.error('失败');
+                                Message.error({message: '失败'}); 
                             },
                             success: function(req) {
                                 console.log(req)
@@ -801,7 +809,7 @@ mounted()
                                 console.log(draw1)
                                 console.log(JSON.stringify({id:req.id,name:req.name,tenantid:req.tenantid,pipecolor:req.pipecolor,pipewidth:req.pipewidth,pipetype:req.pipetype,drawpoint:draw1,createdat:req.createdat}))
                                 $.ajax({
-                                    url:'http://10.112.17.185:8101/api/v1/map/pipe',
+                                    url:'/api/v1/map/pipe',
                                     data:JSON.stringify({id:req.id,name:req.name,tenantid:req.tenantid,pipecolor:req.pipecolor,pipewidth:req.pipewidth,pipetype:req.pipetype,drawpoint:draw1,createdat:req.createdat}),
                                     type:'put',//提交方式
                                     //dataType: 'json',
@@ -814,7 +822,7 @@ mounted()
                                     error:function(error)
                                     {
                                         console.log(error)
-                                        toastr.error('错误');
+                                        Message.error({message: '错误'}); 
                                     }
                                 });
                             }
@@ -860,7 +868,7 @@ mounted()
                 }
 
                 var opts = {
-                    width : 100,     // 信息窗口宽度
+                    width : 225,     // 信息窗口宽度
                     height: 50,     // 信息窗口高度
                     enableAutoPan:true,
                     enableMessage:true//设置允许信息窗发送短息
@@ -880,7 +888,7 @@ mounted()
                             '</tr>'+
                             '<tr>'+
                             '<td>'+'创建时间:'+'</td>'+
-                            '<td>'+pipeDataArray[i].getFullYear()+'-'+(pipeDataArray[i].getMonth()+1)+'-'+pipeDataArray[i].getDate()+'</td>'+
+                            '<td>'+pipeDataArray[i]+'</td>'+
                             '</tr>'+
                             '</table> '
                 var myIcon = new BMap.Icon("../static/baidu/img/us_mk_icon.png", new BMap.Size(23, 20), {
@@ -902,9 +910,11 @@ mounted()
 
                 //////////////////////////////删除巡检线路//////////////////////////////
                 function removeTrackPolyline(e,ee,polyline){
-                    var mymessage=confirm("确认删除站点？");
-                    if(mymessage==true)
-                    {
+                    MessageBox.confirm('确认删除巡检线路?', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(() => {
                         for(i=0;i<polylinePointSum.length;i++)
                         {
                             if(JSON.stringify(polylinePointSum[i]) == JSON.stringify(polyline.getPath()))
@@ -913,22 +923,29 @@ mounted()
                             }
                         }
                         $.ajax({
-                        url: 'http://10.112.17.185:8101/api/v1/map/patroltrack/?trackId='+idSign,
-                        type: 'delete',
-                        error:function(){
-                            toastr.error('删除失败');
-                        },
-                        success: function(req) {
-                            //toastr.warning('修改完成')
-                            window.location.reload();
-                        }
+                            url: '/api/v1/map/patroltrack/?trackId='+idSign,
+                            type: 'delete',
+                            error:function(){
+                                Message.error({message: '删除失败'}); 
+                            },
+                            success: function(req) {
+                                //toastr.warning('修改完成')
+                                window.location.reload();
+                            }
+                        });
+                        
+                    }).catch(() => {
+                      Message({message: '已取消删除'});          
                     });
-                    }
-                    else if(mymessage==false)
-                    {
+                    // var mymessage=confirm("确认删除站点？");
+                    // if(mymessage==true)
+                    // {
+                        
+                    // }
+                    // else if(mymessage==false)
+                    // {
 
-                    }
-
+                    // }
                 }
                 function alterTrackPolyline(e,ee,polyline){
                     polyline.enableEditing()
@@ -943,14 +960,14 @@ mounted()
                 function saveTrackPolyline(e,ee,polyline){
                     polyline.disableEditing()
                      $.ajax({
-                            url: 'http://10.112.17.185:8101/api/v1/map/patroltrack?trackId='+idSign,
+                            url: '/api/v1/map/patroltrack?trackId='+idSign,
                             type: 'get',
                             async : false,
                             dataType: 'json',
                             contentType: 'application/json;',
 
                             error:function(){
-                                toastr.error('失败');
+                                Message.error({message: '保存失败'}); 
                             },
                             success: function(req) {
                                 console.log(req)
@@ -959,7 +976,7 @@ mounted()
                                 console.log(draw1)
                                 console.log(JSON.stringify({id:req.id,name:req.name,tenantid:req.tenantid,pipecolor:req.pipecolor,pipewidth:req.pipewidth,pipetype:req.pipetype,drawpoint:draw1,createdat:req.createdat}))
                                 $.ajax({
-                                    url:'http://10.112.17.185:8101/api/v1/map/patroltrack',
+                                    url:'/api/v1/map/patroltrack',
                                     data:JSON.stringify({id:req.id,name:req.name,tenantid:req.tenantid,pipecolor:req.pipecolor,pipewidth:req.pipewidth,pipetype:req.pipetype,drawpoint:draw1,createdat:req.createdat}),
                                     type:'put',//提交方式
                                     //dataType: 'json',
@@ -972,7 +989,7 @@ mounted()
                                     error:function(error)
                                     {
                                         console.log(error)
-                                        toastr.error('错误');
+                                        Message.error({message: '保存错误'}); 
                                     }
                                 });
                             }
@@ -1035,7 +1052,7 @@ mounted()
           console.log(sitesInfo);
 
           $.ajax({
-            url:"http://10.112.17.185:8101/api/v1/map/sites",
+            url:"/api/v1/map/sites",
             type:"POST",
             contentType: "application/json;charset=utf-8",
             dataType:"JSON",
@@ -1058,7 +1075,7 @@ mounted()
             },
             error:function (err) {
                 console.log(err)
-              alert("添加信息发送失败")
+                Message.error({message: '添加信息发送失败'}); 
             },
             complete:function()
             {
@@ -1071,7 +1088,7 @@ mounted()
             //vm.dialogrenameSite=true
             console.log(vm.renameSiteId)
             $.ajax({
-                url: 'http://10.112.17.185:8101/api/v1/map/sites?sitesId='+vm.renameSiteId,
+                url: '/api/v1/map/sites?sitesId='+vm.renameSiteId,
                 type: 'get',
                 async : false,
                 dataType: 'json',
@@ -1084,7 +1101,7 @@ mounted()
                     console.log(JSON.stringify({id:req.id,name:vm.form.siteNewName,latitude:req.latitude,longtitude:req.longtitude,createdat:req.createdat}))
                     vm.form.siteOldName=req.name
                     $.ajax({
-                        url:'http://10.112.17.185:8101/api/v1/map/sites',
+                        url:'/api/v1/map/sites',
                         data:JSON.stringify({id:req.id,tenantid:tenantId,name:vm.form.siteNewName,latitude:req.latitude,longtitude:req.longtitude,createdat:req.createdat}),
                         type:'put',//提交方式
                         //dataType: 'json',
@@ -1097,7 +1114,7 @@ mounted()
                         error:function(error)
                         {
                             console.log(error)
-                            toastr.error('错误');
+                            Message.error({message: '错误'}); 
                         }
                     });
                 }
@@ -1178,47 +1195,49 @@ mounted()
     showSiteDevice(req)
     {
         console.log(req)
+        vm.SiteDeviceTableData=[];
         for (var i = 0; i < req.data.length; i++) {
               var siteDeviceData = {};
               siteDeviceData.id = req.data[i].id;
               siteDeviceData.deviceName = req.data[i].name;
               siteDeviceData.deviceType = req.data[i].deviceType;
-              siteDeviceData.deviceTime = req.data[i].createdTime;
-              vm.SiteDeviceTableData.push(siteDeviceData);
-              vm.dialogSiteDevice=true
+              siteDeviceData.deviceTime = vm.timestamp(req.data[i].createdTime);
+              vm.SiteDeviceTableData.push(siteDeviceData);              
             }
+        vm.dialogSiteDevice=true
     },
 
     //////////站点设备/////////
     check(sign,row){
         console.log(sign)
         if(sign==true)
-        {var url='api/3d815/siteDevicePaging/'+tenantId+'/'+row.id+'?limit=2&idOffset=&textOffset='; sitesID=row.id}
+        {var url='/api/v1/deviceaccess/sitedevices/'+tenantId+'/'+row.id+'?limit=5';sitesID=row.id}
         else
-        {var url='api/3d815/siteDevicePaging/'+tenantId+'/'+row+'?limit=2&idOffset=&textOffset='; sitesID=row}
+        {var url='/api/v1/deviceaccess/sitedevices/'+tenantId+'/'+row+'?limit=5';}
         console.log(url)
         $.ajax({
-        url: url,
-        type: 'get',
-        dataType: 'json',
-        contentType: 'application/json;',
-        error:function(){
-            alert('失败');
-        },
-        success: function(req) {
-             if(req.nextPageLink!=null)
-             {
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: url,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;',
+            error:function(err){
+                console.log(err)
+            },
+            success: function(req) {
                 vm.showSiteDevice(req)
-                idOffset = req.nextPageLink.idOffset;
-                textOffset = req.nextPageLink.textOffset;
-                hasNext = req.hasNext;
-                console.log(idOffset);
-                console.log(textOffset);
-                console.log(hasNext);
-                preDeviceId.push(idOffset);
-                preDeviceName.push(textOffset);
-             }
-           }
+                 if(req.nextPageLink!=null)
+                 {                    
+                    idOffset = req.nextPageLink.idOffset;
+                    textOffset = req.nextPageLink.textOffset;
+                    hasNext = req.hasNext;
+                    console.log(idOffset);
+                    console.log(textOffset);
+                    console.log(hasNext);
+                    preDeviceId.push(idOffset);
+                    preDeviceName.push(textOffset);
+                 }
+               }
        });
     },
 
@@ -1229,13 +1248,14 @@ mounted()
         if(hasNext)
         {
             jQuery.ajax({
-                url:'api/3d815/siteDevicePaging/'+tenantId+'/'+sitesID+'?limit=9&idOffset='+idOffset+'&textOffset='+textOffset,
+                headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                url:'/api/v1/deviceaccess/sitedevices/'+tenantId+'/'+sitesID+'?limit=5&idOffset='+idOffset+'&textOffset='+textOffset,
                 contentType: "application/json; ",
                 async: false,
                 type:"GET",
                 success:function(req) {
                     pageNum++;
-                    showTable(req)
+                    vm.showSiteDevice(req)
                     if( req.hasNext == true){
                         idOffset = req.nextPageLink.idOffset;
                         textOffset = req.nextPageLink.textOffset;
@@ -1247,13 +1267,13 @@ mounted()
                     }
                 },
                 error:function(err){
-                    alert("当前已是最后一页！错误");
+                    console.log(err)
                 }
             });
         }
         else
         {
-            alert("当前已是最后一页！");
+            Message.warning({message: '当前已是最后一页！'}); 
         }
     },
 
@@ -1261,18 +1281,19 @@ mounted()
     prePage()
     {
         if(pageNum == 1){
-            alert("当前已是第一页！");
+            Message.warning({message: '当前已是第一页！'}); 
         }
         else if(pageNum == 2){
             jQuery.ajax({
-                url:"/api/3d815/siteDevicePaging/"+tenantId+'/'+sitesID+"?limit=9&idOffset=&textOffset=",
+                headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                url:"/api/v1/deviceaccess/sitedevices/"+tenantId+'/'+sitesID+"?limit=5",
                 contentType: "application/json; charset=utf-8",
-                async: false,
+                //async: false,
                 type:"GET",
                 success:function(req) {
                     pageNum--;
                     if(req.data.length != 0){
-                        showTable(req)
+                        vm.showSiteDevice(req)
                         idOffset = req.nextPageLink.idOffset;
                         textOffset = req.nextPageLink.textOffset;
                         hasNext = req.hasNext;
@@ -1281,19 +1302,19 @@ mounted()
                     }
                 },
                 error:function(err){
-                    //console.log(err)
-                    alert("错误");
+                    console.log(err)
                 }
             });
         }else{
             jQuery.ajax({
-                url:"/api/3d815/siteDevicePaging/"+tenantId+'/'+sitesID+"?limit=9&idOffset="+preDeviceId[pageNum-3]+"&textOffset="+preDeviceName[pageNum-3],
+                headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                url:"/api/v1/deviceaccess/sitedevices/"+tenantId+'/'+sitesID+"?limit=5&idOffset="+preDeviceId[pageNum-3]+"&textOffset="+preDeviceName[pageNum-3],
                 contentType: "application/json; charset=utf-8",
                 async: false,
                 type:"GET",
                 success:function(req) {
                     pageNum--;
-                    showTable(req);
+                    vm.showSiteDevice(req)
                     idOffset = req.nextPageLink.idOffset;
                     textOffset = req.nextPageLink.textOffset;
                     hasNext = req.hasNext;
@@ -1302,7 +1323,7 @@ mounted()
 
                 },
                 error:function(err){
-                    alert("错误");
+                    console.log(err)
                 }
             });
         }
@@ -1314,7 +1335,7 @@ mounted()
     {
        vm.warningTableData=[]
         $.ajax({
-          url:"http://10.112.17.185:8101/api/v1/map/warningAll",
+          url:"/api/v1/map/warningAll",
           type:"GET",
           contentType:"application/json;charset=UTF-8",
           dataType:"JSON",
@@ -1324,8 +1345,9 @@ mounted()
               var warning = {};
               warning.id = req[i].id;
               warning.deviceid = req[i].deviceid;
-              warning.content = req[i].content.message;
-              warning.time = new Date(req[i].createdat* 1000).toLocaleString().replace(/:\d{1,2}$/,' ');;
+              warning.content = req[i].content.message;   
+              warning.time = vm.timestamp(req[i].createdat);
+              console.log(vm.timestamp(req[i].createdat))
               warning.status=(req[i].status=="false")?'已查看':"未查看"
               vm.warningTableData.unshift(warning);
               vm.dialogWarning=true
@@ -1337,45 +1359,49 @@ mounted()
         })
     },
 
-    ////////////////报警设备////////
-    warningCheck(row)
+    ///////报警状态改变//////////
+    warningChange(row)
     {
-        ///////报警状态改变//////////
-        // $.ajax({
-        //     url: 'http://10.112.17.185:8101/api/v1/map/warning?warnId='+row.id,
-        //     type: 'get',
-        //     async : false,
-        //     dataType: 'json',
-        //     contentType: 'application/json;',
+        $.ajax({
+            url: '/api/v1/map/warning?warnId='+row.id,
+            type: 'get',
+            async : false,
+            dataType: 'json',
+            contentType: 'application/json;',
 
-        //     error:function(){
-        //         toastr.error('失败');
-        //     },
-        //     success: function(req) {
-        //         console.log(req)
-        //         $.ajax({
-        //             url:'http://10.112.17.185:8101/api/v1/map/warning',
-        //             data:JSON.stringify({id:req.id,tenantid:tenantId,deviceid:req.deviceid,content:req.content,createdat:req.createdat,status:"true"}),
-        //             type:'put',//提交方式
-        //             //dataType: 'json',
-        //             contentType: "application/json",
+            error:function(err){
+                console.log(err)
+            },
+            success: function(req) {
+                console.log(req)
+                console.log(JSON.stringify({id:req.id,tenantid:tenantId,deviceid:req.deviceid,content:req.content,createdat:req.createdat,status:"true"}))
+                $.ajax({
+                    url:'/api/v1/map/warning',
+                    data:JSON.stringify({id:req.id,tenantid:tenantId,deviceid:req.deviceid,content:req.content,createdat:req.createdat,status:"true"}),
+                    type:'put',//提交方式
+                    //dataType: 'json',
+                    contentType: "application/json",
 
-        //             success: function(req){
-        //                console.log(req)
-        //             },
-        //             error:function(error)
-        //             {
-        //                 console.log(error)
-        //             }
-        //         });
-        //     }
-        // });
+                    success: function(req){
+                       console.log(req)
+                    },
+                    error:function(error)
+                    {
+                        console.log(error)
+                    }
+                });
+            }
+        });
+    },
 
+    ////////////////报警设备////////
+    deviceCheck(row)
+    {
         var abilityType=[]
-        console.log(row.deviceid)
+        console.log(row)
         $.ajax({
             headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: 'api/v1/deviceaccess/data/alllatestdata/'+row.deviceid,
+            url: '/api/v1/deviceaccess/data/alllatestdata/'+row,
             type: 'get',
             dataType: 'json',
             contentType: 'application/json;charset=UTF-8',
@@ -1384,21 +1410,21 @@ mounted()
             },
             success: function(req) {
                 console.log(req)
+                vm.dialogDeviceDetail=true 
                 for (var i = 0; i < req.length; i++) {
                   var deviceData = {};
-                  deviceData.updateTime = req[i].ts;
+                  deviceData.updateTime = vm.timestamp(req[i].ts);
                   deviceData.updateKey = req[i].key;
                   deviceData.updateValue = req[i].value;
-                  vm.DeviceDetailTableData.push(deviceData);
-                  vm.dialogDeviceDetail=true
+                  vm.DeviceDetailTableData.push(deviceData);                  
                 }
-                
+                               
             }
         });
 
         $.ajax({
             headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: 'api/v1/deviceaccess/device/'+row.deviceid,
+            url: '/api/v1/deviceaccess/device/'+row,
             type: 'get',
             dataType: 'json',
             contentType: 'application/json;charset=UTF-8',
@@ -1417,6 +1443,7 @@ mounted()
                     contentType: 'application/json;charset=UTF-8',
                     error:function(err){
                         console.log(err)
+                        vm.control=[]
                     },
                     success: function(req) {
 
@@ -1431,7 +1458,7 @@ mounted()
                             
                             
                         }
-                        control.deviceid=row.deviceid;
+                        control.deviceid=row;
                         vm.control=control
                         console.log(control)
                         
@@ -1442,14 +1469,13 @@ mounted()
 
         
     },
-    ///////controlConfirm
+    ///////控制确定///////////
     controlConfirm(e)
     {
         console.log(e)
         console.log(e.serviceBody)
         console.log(e.serviceBody.params.length)
         var json = '{';
-        //var json={"serviceName":e.serviceName,"methodName":e.serviceBody.methodName}
         for (var i = 0; i < e.serviceBody.params.length; i++) {
             json += '"' + e.serviceBody.params[i].key + '":"' + e.serviceBody.params[i].value + '",';           
         }
@@ -1467,53 +1493,70 @@ mounted()
             type: "POST",
             success: function (req) {
                 console.log(req)
-                alert("控制成功")
+                Message.success({message: '控制成功！'});
             },
             error: function (err) {
                 console.log(err)
-                alert("控制失败")
+                Message.error({message: '控制失败！'});
             }
         });
  
 
     },
+
+    //////////查看视频///////
+    videoCkeck(row)
+    {
+        let routeData = this.$router.resolve({ path: '/hello' });
+        window.open(routeData.href, '_blank');
+        //this.$router.go({'/hello')};
+    },
+
+    //////////通知APP///////
+    informAPP(row)
+    {
+
+    },
+
     handleClose(done)
     {
         vm.DeviceDetailTableData=[]
     },
 
     /////////////分页//////////////
-    handleSizeChange(val) {
+    handleSizeChange(val) 
+    {
         console.log(`每页 ${val} 条`);
         this.currentPage = 1;
         this.pageSize = val;
     },
-    handleCurrentChange(val) {
+    handleCurrentChange(val) 
+    {
         console.log(`当前页: ${val}`);
         this.currentPage = val;
     },
 
     ////////////////websocket//////
     initWebSocket()
-    { //初始化weosocket 　　　　　　　
+    { 
+    //初始化weosocket 　　　　　　　
 　　　　　　　　const wsuri = "ws://39.104.189.84:8800/api/warning/webSocket";//ws地址
 　　　　　　　　this.websocket = new WebSocket(wsuri);
 　　　　　　　　this.websocket.onopen = this.websocketonopen;
 　　　　　　　　this.websocket.onerror = this.websocketonerror;
 　　　　　　　　this.websocket.onmessage = this.websocketonmessage;
 　　　　　　　　this.websocket.onclose = this.websocketclose;
-　　　　   },
+　　　},
 
-　　　　　　websocketonopen() 
-        {
-　　　　　　　　console.log("WebSocket连接成功");
-          var data ={tenantId:tenantId}
-          this.websocket.send(JSON.stringify(data))
-　　　　　　},
-　　　　　　websocketonerror(e) { //错误
- 　　　　　　 console.log("WebSocket连接发生错误");
-　　　　　　},
-　　　　　　websocketonmessage(evt){ //数据接收
+　　　websocketonopen() {
+        console.log("WebSocket连接成功");
+        var data ={tenantId:tenantId}
+        this.websocket.send(JSON.stringify(data))　　　　　　　　
+　　　},
+　　　websocketonerror(e) { //错误
+ 　　　　　console.log("WebSocket连接发生错误");
+　　　},
+　　　websocketonmessage(evt){ //数据接收
         window.isJsonString=function(str) {
             try {
                 if (typeof JSON.parse(str) == "object") {
@@ -1523,80 +1566,107 @@ mounted()
             }
             return false;
         }
-　　　　　　　　console.log(evt)
-                  var received_msg = evt.data;
-                  if(isJsonString(evt.data))
-                  {
-                     toastr.info('报警设备：'+JSON.parse(evt.data).deviceId+'&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'+'报警信息：'+JSON.parse(evt.data).content);
-
-                     $.ajax({
-                       url:'api/3d815/getDeviceInfo/'+JSON.parse(evt.data).deviceId,
-                       type:'get',//提交方式
-                       dataType:'JSON',//返回字符串，T大写
-                       success: function(req){
-                        //console.log(req)
-                        if(req.siteId==-1)
-                        {
-                           toastr.warning('设备没有分配站点，请分配！');
-                        }
-                        else
-                        {
-                           $.ajax({
-                              url:'/api/sites/'+req.siteId,
-                              type:'get',//提交方式
-                              dataType:'JSON',//返回字符串，T大写
-                              success: function(req){
-                                 console.log(req.sites)
-                                 if(req.sites[0].tenantId==tenantId)
-                                 {
-                                     point=new BMap.Point(req.sites[0].longtitude,req.sites[0].latitude);
-                                     map.centerAndZoom(point, 20);
-                                     var allOverlay = map.getOverlays();
-                                     //console.log(allOverlay)
-                                     for (var i = 1; i < allOverlay.length ; i++){
-                                             //console.log(allOverlay[i].toString())
-                                             if(allOverlay[i].toString()=="[object Marker]")
+　　　　　console.log(evt)
+          var received_msg = evt.data;
+          if(isJsonString(evt.data))
+          {
+            Notification ({
+                title: '报警提示',
+                message: '报警设备：'+JSON.parse(evt.data).deviceId+';报警信息：'+JSON.parse(evt.data).content,
+                duration: 0
+            });
+            $.ajax({
+                headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                url: '/api/v1/deviceaccess/device/'+JSON.parse(evt.data).deviceId,
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json;charset=UTF-8',
+                error:function(err){
+                    console.log(err)
+                },
+                success: function(req) {
+                    console.log(req) 
+                    if(req.siteId==null)
+                    {
+                       Notification ({
+                        title: '报警提示',
+                        message:'该设备没有分配站点',
+                        duration: 0,
+                        type: 'warning'
+                    });
+                    }
+                    else
+                    {
+                       $.ajax({
+                          url:'/api/v1/map/sites?sitesId='+req.siteId,
+                          type:'get',//提交方式
+                          dataType:'JSON',//返回字符串，T大写
+                          success: function(req){
+                             console.log(req)
+                             if(req.tenantid==tenantId)
+                             {
+                                 var point=new BMap.Point(req.longtitude,req.latitude);
+                                 map.centerAndZoom(point, 20);
+                                 var allOverlay = map.getOverlays();
+                                 //console.log(allOverlay)
+                                 for (var i = 1; i < allOverlay.length ; i++){
+                                         //console.log(allOverlay[i].toString())
+                                         if(allOverlay[i].toString()=="[object Marker]")
+                                         {
+                                             //console.log(allOverlay[i].getLabel())
+                                             if(allOverlay[i].getLabel()!=null)
                                              {
-                                                 //console.log(allOverlay[i].getLabel())
-                                                 if(allOverlay[i].getLabel()!=null)
+                                                 if(allOverlay[i].getLabel().content == req.id)
                                                  {
-                                                     if(allOverlay[i].getLabel().content == req.sites[0].id)
-                                                     {
-                                                         var myIcon = new BMap.Icon(src="../static/baidu/img/008h.gif", new BMap.Size(25, 40), {anchor: new BMap.Size(15, 25), imageOffset: new BMap.Size(0, 0),imageSize:new BMap.Size(30, 30)}); // 指定定位位置  });
-                                                         allOverlay[i].setIcon(myIcon);
-                                                     }
+                                                     var myIcon = new BMap.Icon( warnIcon, new BMap.Size(25, 40), {anchor: new BMap.Size(15, 25), imageOffset: new BMap.Size(0, 0),imageSize:new BMap.Size(30, 30)}); // 指定定位位置  });
+                                                     allOverlay[i].setIcon(myIcon);
                                                  }
                                              }
-                                     }
+                                         }
                                  }
-                              },
-                              error:function(error)
-                              {
-                                  toastr.error(error.message);
-                              }
-                           })
-                        }
-                       },
-                       error:function(error)
-                       {
-                           toastr.error(error.message);
-                       }
-                   })
-                  }
-　　　　　　},
+                             }
+                          },
+                          error:function(error)
+                          {
+                              toastr.error(error.message);
+                          }
+                       })
+                    }           
+                }
+            });
+          }
+　　　},
+    websocketsend(agentData){//数据发送
+　　　　　　　this.websocket.send(agentData);
+　　　},
+    websocketclose(e){ //关闭
+       console.log("connection closed (" + e.code + ")");　　　　
+　　　},
 
-　　　　　　websocketsend(agentData){//数据发送
-　　　　　　　　this.websocket.send(agentData);
-　　　　　　},
+    /////////时间戳组转换//////
+    timestamp(int)
+    {
 
-　　　　　 websocketclose(e){ //关闭
-　　　　　　　　console.log("connection closed (" + e.code + ")");
-　　　　　},
-
+        var val = JSON.parse(int)
+        let date = new Date(val);
+        let y = date.getFullYear();
+        let MM = date.getMonth() + 1;
+        MM = MM < 10 ? ('0' + MM) : MM;
+        let d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        let h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        let m = date.getMinutes();
+        m = m < 10 ? ('0' + m) : m;
+        let s = date.getSeconds();
+        s = s < 10 ? ('0' + s) : s;
+        return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
     }
 
+    
+}
 
-   }
+}
 
 </script>
 <style scoped>

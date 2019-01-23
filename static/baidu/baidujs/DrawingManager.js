@@ -1190,7 +1190,7 @@ var BMAP_DRAWING_MARKER    = "marker",     // 鼠标画点模式
             var draw={point:drawPoint.slice(0,drawPoint.length-2)}
             var draw1=JSON.stringify(draw)
             $.ajax({
-            url:'http://10.112.17.185:8101/api/v1/map/pipe',
+            url:'/api/v1/map/pipe',
             data:JSON.stringify({"name":drawPara.name,"tenantid":tenantId,"pipecolor":styleOptions1.strokeColor,"pipewidth":styleOptions1.strokeWeight,"pipetype":styleOptions1.strokeStyle,"drawpoint":draw1,"createdat":Date.parse(new Date())}),
             type:'POST',//提交方式
             dataType: 'json',
@@ -1315,7 +1315,7 @@ var BMAP_DRAWING_MARKER    = "marker",     // 鼠标画点模式
             var draw1=JSON.stringify(draw)
             console.log(JSON.stringify({"name":drawPara.name,"tenantid":tenantId,"pipecolor":styleOptions1.strokeColor,"pipewidth":styleOptions1.strokeWeight,"pipetype":styleOptions1.strokeStyle,"drawpoint":draw1,"createdat":Date.parse(new Date())}))
             $.ajax({
-            url:'http://10.112.17.185:8101/api/v1/map/patroltrack',
+            url:'/api/v1/map/patroltrack',
             data:JSON.stringify({"name":drawPara.name,"tenantid":tenantId,"pipecolor":styleOptions1.strokeColor,"pipewidth":styleOptions1.strokeWeight,"pipetype":styleOptions1.strokeStyle,"drawpoint":draw1,"createdat":Date.parse(new Date())}),
             type:'POST',//提交方式
             dataType: 'json',
@@ -1692,7 +1692,7 @@ $scope.prePage=function() {
               var mm = {};
               mm.id = idArray[x];
               mm.siteName = nameArray[x];
-              mm.createdat = createdatArray[x];
+              mm.createdat = vm.timestamp(createdatArray[x]);
               vm.siteTableData.push(mm);
             }
             console.log(idArray)
