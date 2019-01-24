@@ -46,7 +46,10 @@
       login () {
         let _this = this;
         if (this.loginForm.username === '' || this.loginForm.password === '') {
-          alert('账号或密码不能为空');
+          _this.$message({
+            message: '账号密码不能为空',
+            type: 'warning'
+          });
         } else {
           const dataPost= {username:this.loginForm.username,password:this.loginForm.password};
         //  var data = JSON.stringify(dataPost);
@@ -56,7 +59,6 @@
             url: '/api/v1/user/login',
              withCredentials:true,
             dataType:"text",
-          //  data: {username:"TenantAdmin@bupt.edu.cn",password:"password"}
             data:dataPost
           }).then(res => {
             console.log(res.data);
@@ -71,10 +73,15 @@
             console.log(_this.userToken+"mmp")
             _this.changeLogin({ Authorization: _this.userToken });
             _this.$router.push('/home');
-
-            alert('登陆成功');
+             this.$message({
+               message: '登陆成功',
+               type: 'success'
+             });
           }).catch(error => {
-            alert('账号或密码错误');
+             this.$message({
+               message: '账号密码错误',
+               type: 'warning'
+             });
             console.log(error);
           });
         }

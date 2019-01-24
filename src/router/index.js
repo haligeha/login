@@ -2,14 +2,14 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import login from '@/components/login';
 import home from '@/components/home';
-import HelloWorld from '@/components/HelloWorld.vue'
+import splitScreen from '@/components/splitScreen.vue'
 import Forms from '@/components/Forms.vue'
 import Tables from '@/components/Tables.vue'
 import UIElement from '@/components/UIElement.vue'
 import Goods from '@/components/Goods.vue'
 import gis from '@/components/gis.vue'
 import DeviceList from '@/components/DeviceList.vue'
-import Hi from '@/components/Hi.vue'
+import Round from '@/components/Round.vue'
 Vue.use(Router);
 
 const router = new Router({
@@ -32,13 +32,13 @@ const router = new Router({
        },
       children:[
         {
-          path: '/hello',
-          component: HelloWorld,
+          path: '/splitScreen',
+          component: splitScreen,
 
         },
         {
-          path: '/hi',
-          component: Hi,
+          path: '/round',
+          component: Round,
 
         },
         {

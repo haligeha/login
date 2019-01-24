@@ -266,7 +266,7 @@
               vm.tableData = msg;
             },
             error: function (err) {
-              alert("信息获取失败");
+              console.log("信息获取失败");
             }
           });
         },
@@ -281,7 +281,7 @@
               vm.pageInfo.totalPage=msg;
             },
             error:function (err) {
-              alert("信息总条数获取失败");
+              console.log("信息总条数获取失败");
             }
           })
         },
@@ -332,7 +332,7 @@
               });*/
             },
             error:function (err) {
-              alert("添加信息发送失败")
+              console.log ("添加信息发送失败")
             }
           })
 
@@ -420,7 +420,7 @@
               console.log("查看编辑信息成功："+msg);
             },
             error:function (err) {
-              alert("编辑信息获取失败")
+              console.log("编辑信息获取失败")
             }
           })
         },
@@ -441,7 +441,7 @@
               console.log("编辑信息确认发送")
             },
             error:function (err) {
-              alert("编辑信息发送失败")
+              console.log("编辑信息发送失败")
             }
           })
 
@@ -471,7 +471,7 @@
               console.log("查看信息成功"+msg);
             },
             error:function (err) {
-              alert("查看信息失败")
+              console.log("查看信息失败")
             }
           })
 
@@ -505,7 +505,7 @@
               console.log("删除成功")
             },
             error:function (err) {
-              alert("删除失败")
+              console.log("删除失败")
             }
 
           })
@@ -530,7 +530,7 @@
               console.log("查看评价信息成功"+msg);
             },
             error:function (err) {
-              alert("查看评价信息失败")
+              console.log("查看评价信息失败")
             }
           })
         },
@@ -554,7 +554,7 @@
               console.log("评价信息发送成功")
             },
             error:function (err) {
-              alert("评价信息发送失败")
+              console.log("评价信息发送失败")
             }
           })
         },

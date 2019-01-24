@@ -21,17 +21,17 @@
     <div class="sidebar-collapse">
       <ul class="nav" id="main-menu">
         <li>
-          <router-link to="/hello" class="active-menu waves-effect waves-dark"><i class="fa fa-dashboard"></i> 视频</router-link>
+          <router-link to="/splitScreen" class="active-menu waves-effect waves-dark"><i class="fa fa-dashboard"></i> 视频</router-link>
         </li>
         <li>
           <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i> 视频2<span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
 
             <li>
-              <router-link to="/hello">分屏</router-link>
+              <router-link to="/splitScreen">分屏</router-link>
             </li>
             <li>
-              <router-link to="/hi">轮询</router-link>
+              <router-link to="/round">轮询</router-link>
             </li>
 
 
@@ -121,7 +121,7 @@
 
             },
             error: function (err) {
-              alert("加载0000失败");
+              console.log("加载0000失败");
             }
           });
         },

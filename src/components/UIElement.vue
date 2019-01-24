@@ -1,5 +1,4 @@
 <template>
-
   <div class="charts">
     <div id="page-wrapper" >
       <div class="header">
@@ -94,7 +93,15 @@
                layout="prev, pager, next"
                :total="50">
              </el-pagination>-->
-
+          <div class="pagination-container" align="right" style="margin-left:20px;margin-right: 4px">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page.sync="pageInfo.pageCode"
+              :page-size="pageInfo.pageSize"
+              layout=" prev, pager, next"
+              :total="pageInfo.totalPage">
+            </el-pagination>
+          </div>
         </div>
 
         <!--tianjia-->
@@ -206,7 +213,7 @@
           <span>请选择对巡检日记进行查看或添加</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="handleAdd2(dayobject)">添加</el-button>
-            <el-button type="primary" @click="showDetail(GMTToStr(dayobject.day))">查看</el-button>
+            <el-button type="primary" @click="getTotalPage(GMTToStr(dayobject.day)),showDetail(GMTToStr(dayobject.day))">查看</el-button>
          </span>
         </el-dialog>
         <!--shanchu-->
@@ -238,6 +245,8 @@
         dialogEditVisible:false,
         transID:undefined,
         calendar_date:'',
+        calendarDate:'',
+        calendar:'',
         tempArr: [],
         dayobject:{},
         currentDay: 1,
@@ -248,7 +257,11 @@
         items: [],
         arrDate: [10, 15],
         isShow: false,
-  //      getUrl: 'http://10.112.17.185:8100/api/v1/info/allReport',
+        pageInfo:{
+          pageCode:1,
+          pageSize:2,
+          totalPage:3
+      },
         form: {
           id: undefined,
           duty_person: '',
@@ -276,7 +289,7 @@
         let date = new Date(time)
         let Str = date.getFullYear() + '-' +
           (date.getMonth() + 1) + '-' +
-          date.getDate() + ' '
+          date.getDate()
         return Str
       },
       TimestampToTime:function(create_date) {
@@ -294,25 +307,21 @@
           //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
           url: "/api/v1/info/allReport",
           success: function (msg) {
-            console.log("hello");
             vm.tempArr=msg;
-            console.log(vm.tempArr[0].id+"123456");
-            //  vm.tempArr.push(mm);
-            console.log(1);
             vm.initData(null);
           },
           error: function (err) {
-            alert("加载0000失败");
+            console.log("加载失败");
           }
         });
 
       },
       initData: function (cur) {
         //    var leftcount = 0
-        console.log(this.tempArr+"44444")
+
         var date
         if (cur) {
-          console.log(cur)
+
           date = new Date(cur)
         } else {
           var now = new Date()
@@ -328,7 +337,7 @@
           date = new Date(this.formatDate(d.getFullYear(), d.getMonth()+1, 1))
          }
       }
-        console.log("223333333" + "    " + date);
+
         this.currentDay = date.getDate()
 
         this.currentYear = date.getFullYear()
@@ -350,18 +359,30 @@
           var dayobject = {}// 用一个对象包装Date对象  以便为以后预定功能添加属性
           dayobject.day = d
           var tempTime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
-          // var tempSign=this.isVerDate(d.getDate());
           var tempSign = this.isVerDate(tempTime)
+
           dayobject.eventSign = tempSign
-          //   this.days.push(dayobject)// 将日期放入data 中的days数组 供页面渲染使用
-          if (tempSign.length > 0) {
-            // console.log(tempSign);
+
+       /*   if (tempSign.length > 0) {
             dayobject = {day: d, eventSign: tempSign[0]}
-            console.log("1111");
-            //        dayobject = {day: d, eventSign: tempSign[0]}
             this.days.push(dayobject)
           }
-          //    }
+*/
+
+          var maxy = [];
+          var ma = [];
+          if (tempSign.length > 0) {
+
+            for (var m = 0; m < tempSign.length; m++) {
+
+              ma = tempSign[m];
+              maxy.push(ma);
+
+            }
+            dayobject = {day: d, eventSign: maxy}
+
+            this.days.push(dayobject)
+          }
           else {
             dayobject = {day: d, eventSign: []}
             this.days.push(dayobject)
@@ -374,28 +395,27 @@
           d.setDate(d.getDate() + i)
 
           var dayobject = {}
-          // dayobject.day=d;
           var tempTime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
           var tempSign = this.isVerDate(tempTime)
-          //console.log(tempSign[0]);
+
           var maxy = [];
           var ma = [];
           if (tempSign.length > 0) {
-            console.log("12333333" + tempSign.length);
+
             for (var m = 0; m < tempSign.length; m++) {
-              //   dayobject = {day: d, eventSign: tempSign[i]}
+
               ma = tempSign[m];
               maxy.push(ma);
 
             }
             dayobject = {day: d, eventSign: maxy}
-            console.log(dayobject.eventSign[0].flag + "hahhahahhahahhaha");
+
             this.days.push(dayobject)
           }
           else {
             dayobject = {day: d, eventSign: []}
             this.days.push(dayobject)
-            console.log("cesshshishihi" + d.getDate())
+
           }
 
 
@@ -404,32 +424,32 @@
 
 
       isVerDate(v) {
-        console.log(this.tempArr+"3333");
+
         var tem = new Array();
         var temp = '';
-        function TimestampToTime(create_date) {
+        function Timestamp(create_date) {
           var date = new Date(create_date * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
           var Y = date.getFullYear() + '-';
-          var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+       //   var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        //  var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
+          var M= (date.getMonth()+1)+ '-';
           var D = date.getDate();
           return Y + M + D
         };
 
         for (var i = 0; i < this.tempArr.length; i++) {
-
-          if ( TimestampToTime(this.tempArr[i].calendar_date) === v) {
-
+          if ( Timestamp(this.tempArr[i].calendar_date) === v) {
             temp = {flag: true, arrList: this.tempArr[i]}
-            console.log("the first time");
             tem.push(temp)
             // break
           } else {
             temp = {flag: false, arrList: ''}
             //    tem.push(temp)
+
           }
           ;
         }
-        //console.log(tem);
+
         return tem;
       },
       pickPre: function (year, month) {
@@ -447,7 +467,7 @@
         this.initData(this.formatDate(d.getFullYear(), d.getMonth() + 1, 1))
       },
       pickYear: function (year, month) {
-        alert(year + ',' + month)
+        this.$message(year + ',' + month);
       },
 
       // 返回 类似 2016-01-02 格式的字符串
@@ -459,6 +479,7 @@
         if (d < 10) d = '0' + d
         return y + '-' + m + '-' + d
       },
+
       handleAdd2:function(v){
 
         var vm=this;
@@ -469,7 +490,7 @@
       },
       handleAdd1:function(formName,dayobject){
         var vm=this;
-        console.log(vm.dayobject.day+"11111111111");
+
         this.$refs[formName].validate((valid) => {
           if (valid) {
             vm.handleAdd(dayobject)
@@ -484,47 +505,64 @@
         var vm=this;
         vm.dialogADDVisible=true;
         this.dayobject=m;
-        console.log(this.dayobject);
+        this.pageInfo.pageCode=0;
       },
 
       showNormal:function(m){
         var vm=this;
         vm.dialogAddVisible=true;
         this.dayobject=m;
+
       },
+　　　//获取页码总数
+      getTotalPage(date){
+        var vm=this;
+        vm.calendar_date=date
+        vm.calendar_date=Math.round(new Date(vm.calendar_date).getTime()/1000).toString();
+        var dataPass={}
+        dataPass.date=vm.calendar_date;
+        $.ajax({
+          url:"/api/v1/info/inspectionOfDay",
+          type:"GET",
+          dataType:"JSON",
+          data:dataPass,
+          success:function (msg) {
+            console.log("信息总条数获取成功： "+msg+"条记录")
+            vm.pageInfo.totalPage=msg;
+          },
+          error:function (err) {
+            console.log("信息总条数获取失败");
+          }
+        })
+
+      },
+
+      //改变页码
+      handleCurrentChange:function(val){
+        var vm=this
+
+        this.pageInfo.pageCode=val;
+        var calendar=vm.calendarDate
+
+
+        this.showDetail(calendar,this.pageInfo.pageSize,this.pageInfo.pageCode);
+      },
+
       // 点击显示该日期的数据
-      /* showDetail: function (v) {
-              var vm=this;
-              this.dialogADDVisible=false;
-            this.items = [];
-            console.log(v)
-            var m = [];
-            //   for(var i=0;i<v.length;i++)this.event_item = v[i];
-            for (var i = 0; i < v.eventSign.length; i++) {
-              m = v.eventSign[i].arrList;
-              //   this.event_item=m;
-              console.log(m.calendar_date+"bengbeng");
-              this.items.push(m);
-            }
-          },*/
       showDetail:function(v){
         var vm=this;
+
         this.dialogADDVisible=false;
         this.items=[];
-        /*  function GMTToStr(time) {
-            let date = new Date(time)
-            let Str = date.getFullYear() + '-' +
-              (date.getMonth() + 1) + '-' +
-              date.getDate() + ' '
-            return Str
-          }
-          this.calendar_date=GMTToStr(v)*/
         vm.calendar_date=v;
-        console.log(vm.calendar_date+"bengbengbeng ")
+        this.calendarDate=v;
         vm.calendar_date=Math.round(new Date(vm.calendar_date).getTime()/1000).toString();
 
         var dataCheck={}
         dataCheck.calendar_date=vm.calendar_date;
+        dataCheck.limit=vm.pageInfo.pageSize;
+        dataCheck.page=vm.pageInfo.pageCode-1;
+
         $.ajax({
           url:"/api/v1/info/inspectionByCalendarDate",
           type:"GET",
@@ -533,28 +571,28 @@
           data:dataCheck,
           success:function (msg) {
             vm.items=msg;
-
+            console.log(msg)
             console.log("查看信息成功")
+
           },
           error:function (err) {
-            alert("加载0005失败")
+            console.log("加载添加失败")
           }
         })
       },
 
       handleAdd(dayobject) {
         var vm = this
-
         this.form.create_date = Math.round(new Date().getTime()/1000).toString();
         function GMTToStr(time) {
           let date = new Date(time)
-          let Str = date.getFullYear() + '-' +
-            (date.getMonth() + 1) + '-' +
-            date.getDate() + ' '
+          let Str = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
           return Str
         };
         var m=GMTToStr(dayobject.day)
+
         this.form.calendar_date = Math.round(new Date(m).getTime()/1000).toString();
+        console.log(this.form.calendar_date);
         var dataPost = {};
         dataPost.duty_person = this.form.duty_person;
         dataPost.inspection_person = this.form.inspection_person;
@@ -564,7 +602,7 @@
         dataPost.summary = this.form.summary;
         dataPost.abnormal = this.form.abnormal;
         dataPost.maintenance = this.form.maintenance;
-        console.log(dataPost);
+
         var dataPostString = JSON.stringify(dataPost);
         $.ajax({
           url: "/api/v1/info/inspection",
@@ -579,13 +617,12 @@
             vm.getTempArr();
           },
           error: function (err) {
-            alert("加载0001失败")
+            console.log("加载添加失败")
           }
         })
 
       },
       resetForm() {
-
         this.form = {
           duty_person: '',
           inspection_person: '',
@@ -613,12 +650,12 @@
           function test(h2) {
             if ( h2< 10) {
               //  h2 = date.getHours() + ':';
-              console.log("h2<10");
+
               h2 = "0" + h2;
             }
             else {
               h2=h2;
-              console.log("h2>10");
+
             }
             return h2;
           }
@@ -652,7 +689,7 @@
             console.log("查看信息成功")
           },
           error:function (err) {
-            alert("加载0005失败")
+            console.log("加载查看失败")
           }
         })
       },
@@ -717,20 +754,26 @@
             console.log("查看编辑信息成功")
           },
           error:function (err) {
-            alert("加载0005失败")
+            console.log("加载编辑失败")
           }
         })
       },
-    /*  handleCurrentChange(val){
-        this.pageInfo.pageCode=val;
-          this.showDetail(3, this.pageInfo.pageCode);
-      },*/
 
       handleEditConfirm(){
         var vm=this;
+        function Timestamp(create_date) {
+          var date = new Date(create_date * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+          var Y = date.getFullYear() + '-';
+          var M= (date.getMonth()+1)+ '-';
+          var D = date.getDate();
+          return Y + M + D
+        };
+
         this.form.calendar_date = Math.round(new Date(this.form.calendar_date).getTime()/1000).toString();
+        this.calendar=Timestamp(this.form.calendar_date);
         this.form.create_date = Math.round(new Date(this.form.create_date).getTime()/1000).toString();
-        console.log(this.form.calendar_date);
+
+        var dataDate=new Date(this.calendar);
         var dataPost = {};
         dataPost.id = this.form.id;
         dataPost.duty_person = this.form.duty_person;
@@ -742,7 +785,7 @@
         dataPost.abnormal = this.form.abnormal;
         dataPost.maintenance = this.form.maintenance;
         var reportInfo=JSON.stringify(dataPost);
-        console.log(reportInfo+"sing a song")
+
         $.ajax({
           url:"/api/v1/info/inspection",
           type:"PUT",
@@ -752,11 +795,11 @@
           success:function () {
             vm.dialogEditVisible=false;
             vm.getTempArr();
-
             vm.resetForm()
+            vm.showDetail(dataDate)
           },
           error:function (err) {
-            alert("加载0006失败")
+            console.log("加载编辑失败")
           }
         })
 
@@ -777,6 +820,7 @@
         var dataEdit={}
         dataEdit.reportId=this.transID;
         console.log(dataEdit);
+        //@Todo 删除接口
         $.ajax({
           url:"/api/v1/info/inspectionById",
           type:"GET",
@@ -789,17 +833,27 @@
             console.log("查看删除信息日期成功")
           },
           error:function (err) {
-            alert("加载0007失败")
+            console.log("加载编辑失败")
           }
         })
-        console.log(this.calendar_date)
+
       },
       handleDeleteConfirm(){
+        function Timestamp(create_date) {
+          var date = new Date(create_date * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+          var Y = date.getFullYear() + '-';
+          var M= (date.getMonth()+1)+ '-';
+          var D = date.getDate();
+          return Y + M + D
+        };
+
+
         var vm=this;
         var dataDelete={}
         dataDelete.inspectionId=this.transID;
-        console.log(this.calendar_date+"mmmaaaa")
-        var p=this.calendar_date;
+        var pp= Math.round(new Date(this.calendar_date).getTime()/1000).toString();
+        var p=Timestamp(pp);
+
         $.ajax({
           url:"/api/v1/info/inspectionId?inspectionId="+dataDelete.inspectionId,
           type:"DELETE",
@@ -809,17 +863,18 @@
           success:function () {
             vm.dialogDeleteVisible=false;
             vm.getTempArr();
+            vm.getTotalPage(p)
+            vm.pageInfo.pageCode=1;
+            vm.showDetail(p);
 
             console.log("删除成功")
           },
-
           error:function (err) {
-            alert("加载0003失败")
+            console.log("加载删除失败")
           }
 
         })
-        console.log(p+"maya");
-        vm.showDetail(p);
+
       },
 
 

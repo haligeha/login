@@ -106,7 +106,7 @@
             type: "GET",
             dataType: "JSON",
             //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
-            url: "/api/v1/info/alldevices?limit=" + showNum,
+            url: "/api/v1/user/alldevices?limit=" + showNum,
             success: function (msg) {
               console.log("信息获取成功" + msg)
               vm.tableData = msg;
@@ -140,7 +140,7 @@
             data.siteId = this.search;
             data.limit = 9;
             $.ajax({
-              url: "/api/v1/info/devicesBySiteId",
+              url: "/api/v1/user/devicesBySiteId",
               type: "GET",
               //   contentType:"application/json",
               dataType: "JSON",
@@ -158,7 +158,7 @@
           var vm = this;
           console.log(vm.nextDeviceId);
           console.log(vm.nextDeviceName);
-          var prePageUrl = "/api/v1/info/alldevices?limit=9" + "&idOffset=" + vm.nextDeviceId + "&textOffset=" + vm.nextDeviceName;
+          var prePageUrl = "/api/v1/user/alldevices?limit=9" + "&idOffset=" + vm.nextDeviceId + "&textOffset=" + vm.nextDeviceName;
           if (vm.nextDeviceId && vm.nextDeviceName) {
             $.ajax({
               url: prePageUrl,
@@ -189,15 +189,17 @@
             var vm = this;
             var url = '';
             if (vm.pageNum === 1) {
-              alert("当前为首页");
+              this.$message({
+                message: '当前为首页'
+              });
             }
             else {
               if (vm.pageNum === 2) {
-                url = "/api/v1/info/alldevices?limit=" + 9;
+                url = "/api/v1/user/alldevices?limit=" + 9;
               } else {
                 preDeviceId = vm.preDeviceIdArr[pageNum - 3];
                 preDeviceName = vm.preDeviceNameArr[pageNum - 3];
-                url = "/api/v1/info/alldevices?limit=９" + "&idOffset=" + preDeviceId + "&textOffset=" + preDeviceName;
+                url = "/api/v1/user/alldevices?limit=９" + "&idOffset=" + preDeviceId + "&textOffset=" + preDeviceName;
               }
               $.ajax({
                 url: url,
@@ -210,7 +212,7 @@
                   vm.nextDeviceName = vm.tableData[last].name;
                 },
                 error: function (err) {
-                  alert("向前翻页失败")
+                 console.log("向前翻页失败")
                 }
 
               });

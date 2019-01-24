@@ -314,7 +314,7 @@
             vm.tableDataEme = msg;
           },
           error: function (err) {
-            alert("加载0000失败");
+            console.log("加载0000失败");
           }
         });
       },
@@ -329,7 +329,7 @@
             vm.pageInfo.totalPage = msg;
           },
           error: function (err) {
-            alert("信息总条数获取失败");
+            console.log("信息总条数获取失败");
           }
         })
       },
@@ -383,7 +383,7 @@
               vm.resetForm();
             },
             error:function (err) {
-              alert("添加信息发送失败")
+              console.log("添加信息发送失败")
             }
 
       })
@@ -414,7 +414,7 @@
             console.log("删除成功")
           },
           error: function (err) {
-            alert("删除失败")
+            console.log("删除失败")
 
           }
         })
