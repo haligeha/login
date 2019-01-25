@@ -173,7 +173,7 @@
         }
       })
       var player3 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang2',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player3',
         plugins: [RTMP],
         autoPlay: !0,
@@ -209,7 +209,7 @@
         }
       })
       var player4 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang3',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player4',
         plugins: [RTMP],
         autoPlay: !0,
@@ -245,7 +245,7 @@
         }
       })
       var player5 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang4',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player5',
         plugins: [RTMP],
         autoPlay: !0,
@@ -317,7 +317,7 @@
         }
       })
       var player7 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang2',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player7',
         plugins: [RTMP],
         autoPlay: !0,
@@ -353,7 +353,7 @@
         }
       })
       var player8 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang3',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player8',
         plugins: [RTMP],
         autoPlay: !0,
@@ -389,7 +389,7 @@
         }
       })
       var player9 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang4',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player9',
         plugins: [RTMP],
         autoPlay: !0,
@@ -461,7 +461,7 @@
         }
       })
       var player31= new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang2',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player31',
         plugins: [RTMP],
         autoPlay: !0,

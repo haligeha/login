@@ -149,7 +149,7 @@
          var vm=this;
          var m = vm.index+1
           vm.index= m%4;
-         vm.resources=["rtmp://39.104.186.210/oflaDemo/haikang1","rtmp://39.104.186.210/oflaDemo/haikang2","rtmp://39.104.186.210/oflaDemo/haikang3"]
+         vm.resources=["rtmp://39.104.186.210/oflaDemo/haikang1","rtmp://39.104.186.210/oflaDemo/haikang2","rtmp://39.104.186.210/oflaDemo/haikang1"]
          vm.resource = vm.resources[vm.index];
        //   vm.resource = "rtmp://39.104.186.210/oflaDemo/haikang2";
          vm.resource=vm.resources[vm.index]
