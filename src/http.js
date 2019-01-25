@@ -4,10 +4,12 @@
  */
 
 import axios from 'axios'
+import {baseUrl} from './config/env'
 
 // axios 配置
 axios.defaults.timeout = 5000
-axios.defaults.baseURL = 'http://localhost:8080/'
+//axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = baseUrl
 
 // http request 拦截器
 // 添加请求拦截器，在请求头中加token

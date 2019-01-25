@@ -1599,6 +1599,7 @@
       },
       trackCheck(row)
       {
+        //@TODO url带有http
         $.ajax({
           url: "http://10.112.17.185:8101/api/v1/map/track?trackId="+row,
           contentType: "application/json; charset=utf-8",//post请求必须

@@ -52,7 +52,6 @@
           });
         } else {
           const dataPost= {username:this.loginForm.username,password:this.loginForm.password};
-        //  var data = JSON.stringify(dataPost);
            this.axios({
             contentType: 'application/json; charset=utf-8',
             method: 'post',
