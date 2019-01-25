@@ -1,6 +1,6 @@
 <template>
   <div class="inner-bg">
-    <div class="container">
+    <div class="container" style="flex-direction:column">
       <div class="row" style="position:relative;top:200px;">
         <div class="col-sm-8 col-sm-offset-2 text">
           <h1 class="messagehead" align="center" style="color:#EEEEEE;">信息管理平台登录</h1>
@@ -19,7 +19,7 @@
   <div id="login">
     <input type="text" v-model="loginForm.username" placeholder="用户名" style="color:#EEEEEE"/>
     <input type="password" v-model="loginForm.password" placeholder="密码"style="color:#EEEEEE"/>
-    <el-button @click="login" style="width:550px;height:34px;background-color:#66B1FF;">登录</el-button>
+    <el-button @click="login" style="width:100%;height:34px;color:#ffffff;background-color:#66B1FF;">登录</el-button>
   </div>
         </div>
       </div>
@@ -60,16 +60,16 @@
             dataType:"text",
             data:dataPost
           }).then(res => {
-            console.log(res.data);
-             console.log(res.data.tenantId);
+
             _this.userToken = res.data.access_token;
             // 将用户token保存到vuex中
             localStorage.setItem("tenant_id",res.data.tenant_id);
             localStorage.setItem("auth",res.data.access_token);
-            console.log(res.data.tenant_id+"hhh")
+            localStorage.setItem("name",res.data.user_name)
+
             this.setCookie("tenant_id",res.data.tenant_id,7000);
             this.setCookie("auth",res.data.access_token,7000);
-            console.log(_this.userToken+"mmp")
+
             _this.changeLogin({ Authorization: _this.userToken });
             _this.$router.push('/home');
              this.$message({
@@ -97,10 +97,10 @@
       getCookie: function (cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
-        console.log("获取cookie,现在循环")
+
         for (var i = 0; i < ca.length; i++) {
           var c = ca[i];
-          console.log(c)
+
           while (c.charAt(0) == ' ') c = c.substring(1);
           if (c.indexOf(name) != -1){
             return c.substring(name.length, c.length);

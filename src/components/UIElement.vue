@@ -495,7 +495,7 @@
           if (valid) {
             vm.handleAdd(dayobject)
           } else {
-            console.log('error submit!!');
+
             return false;
           }
         });
@@ -571,7 +571,7 @@
           data:dataCheck,
           success:function (msg) {
             vm.items=msg;
-            console.log(msg)
+
             console.log("查看信息成功")
 
           },
@@ -592,7 +592,7 @@
         var m=GMTToStr(dayobject.day)
 
         this.form.calendar_date = Math.round(new Date(m).getTime()/1000).toString();
-        console.log(this.form.calendar_date);
+
         var dataPost = {};
         dataPost.duty_person = this.form.duty_person;
         dataPost.inspection_person = this.form.inspection_person;
@@ -611,7 +611,7 @@
           dataType: "text",
           data: dataPostString,
           success: function (msg) {
-            console.log("success");
+
             vm.dialogAddVisible = false;
             vm.resetForm();
             vm.getTempArr();
@@ -668,7 +668,7 @@
         this.transID=id;
         var dataCheck={}
         dataCheck.reportId=this.transID;
-        console.log(dataCheck);
+
         $.ajax({
           url:"/api/v1/info/inspectionById",
           type:"GET",
@@ -714,12 +714,12 @@
           function test(h2) {
             if ( h2< 10) {
               //  h2 = date.getHours() + ':';
-              console.log("h2<10");
+
               h2 = "0" + h2;
             }
             else {
               h2=h2;
-              console.log("h2>10");
+
             }
             return h2;
           }
@@ -733,7 +733,7 @@
         this.transID=id;
         var dataEdit={}
         dataEdit.reportId=this.transID;
-        console.log(dataEdit);
+
         $.ajax({
           url:"/api/v1/info/inspectionById",
           type:"GET",
@@ -819,7 +819,7 @@
         this.transID=id;
         var dataEdit={}
         dataEdit.reportId=this.transID;
-        console.log(dataEdit);
+
         //@Todo 删除接口
         $.ajax({
           url:"/api/v1/info/inspectionById",

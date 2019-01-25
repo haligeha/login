@@ -60,7 +60,7 @@
         </div>
       </div>
 
-      <div id="buttons">
+    <!--  <div id="buttons">
         <input type="button" value="上" @click="up()">
         <input type="button" value="下" @click="down()">
         <input type="button" value="左" @click="left()">
@@ -69,7 +69,7 @@
         <input type="button" value="录制" @click="record()">
         <input type="button" value="查看录像" @click="records()">
 
-      </div>
+      </div>-->
     </div>
     <!-- /. PAGE INNER  -->
   </div>
@@ -101,7 +101,7 @@
     },
     mounted: function () {
       var player2 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player',
         plugins: [RTMP],
         autoPlay: !0,
@@ -137,7 +137,7 @@
         }
       })
       var player = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang2',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player2',
         plugins: [RTMP],
         autoPlay: !0,
@@ -173,7 +173,7 @@
         }
       })
       var player3 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang3',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang2',
         parentId: '#player3',
         plugins: [RTMP],
         autoPlay: !0,
@@ -209,7 +209,7 @@
         }
       })
       var player4 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang3',
         parentId: '#player4',
         plugins: [RTMP],
         autoPlay: !0,
@@ -245,7 +245,7 @@
         }
       })
       var player5 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang4',
         parentId: '#player5',
         plugins: [RTMP],
         autoPlay: !0,
@@ -317,7 +317,7 @@
         }
       })
       var player7 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang2',
         parentId: '#player7',
         plugins: [RTMP],
         autoPlay: !0,
@@ -353,7 +353,7 @@
         }
       })
       var player8 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang3',
         parentId: '#player8',
         plugins: [RTMP],
         autoPlay: !0,
@@ -389,7 +389,7 @@
         }
       })
       var player9 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang4',
         parentId: '#player9',
         plugins: [RTMP],
         autoPlay: !0,
@@ -425,7 +425,7 @@
         }
       })
       var player21 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player21',
         plugins: [RTMP],
         autoPlay: !0,
@@ -461,7 +461,7 @@
         }
       })
       var player31= new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang2',
         parentId: '#player31',
         plugins: [RTMP],
         autoPlay: !0,
@@ -496,10 +496,10 @@
           }
         }
       })
-      console.log("mounted2")
+
     },
     methods: {
-
+/*
       up: function () {
         $.ajax({
           // url:"http://10.128.210.216:8083/control?cmd=up&status=0",
@@ -599,6 +599,8 @@
           }
         });
       },
+      */
+
       video:function(a){
         if(a=="1"){
           console.log(a+"1111");

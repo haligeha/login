@@ -310,7 +310,7 @@
           dataPost.duration = this.form.duration;
           dataPost.activity_range = this.form.activity_range;
           dataPost.date = this.form.date;
-          console.log(dataPost);
+
           var dataPostString = JSON.stringify(dataPost);
           $.ajax({
             url:"/api/v1/info/entranceWork",
@@ -319,7 +319,7 @@
             dataType:"JSON",
             data:dataPostString,
             success:function(msg){
-              console.log("添加信息发送成功"+msg);
+
               vm.getTableData();
               vm.getTotalPage();
               vm.dialogAddVisible=false;
@@ -343,7 +343,7 @@
         },
         handleFilterRange(activityRange,pageSize,pageCode) {
           var vm = this;
-          console.log(this.listQuery.activityRange);
+
 
           if (this.listQuery.activityRange == '') {
               vm.getTotalPage();
@@ -387,7 +387,7 @@
               vm.pageInfo.totalPage=msg;
             },
             error:function (err) {
-              alert("信息总条数获取失败");
+              console.log("信息总条数获取失败");
             }
           })
         },
@@ -402,7 +402,7 @@
           this.transID=this.tableData[index].id;
           var dataEdit={}
           dataEdit.entranceId=this.transID;
-          console.log(dataEdit);
+
           $.ajax({
             url:"/api/v1/info/entranceWorkById",
             type:"GET",
@@ -426,7 +426,7 @@
         },
         handleEditConfirm(){
           var vm=this;
-          console.log(this.form);
+
           var editForm=JSON.stringify(this.form);
           $.ajax({
             url:"/api/v1/info/entranceWork",
@@ -453,7 +453,7 @@
           this.transID=this.tableData[index].id;
           var dataGet={};
           dataGet.entranceId=this.transID;
-          console.log(dataGet)
+
           $.ajax({
             url:"/api/v1/info/entranceWorkById",
             type:"GET",
@@ -486,13 +486,13 @@
           var currRow=index+1;
           this.transID=this.tableData[currRow-1].id;
 
-          console.log(this.transID)
+
         },
         handleDeleteConfirm(){
           var vm=this;
           var dataDelete={}
           dataDelete.WorkId=this.transID;
-          console.log(dataDelete)
+
           $.ajax({
             url:"/api/v1/info/entranceWorkById?WorkId="+dataDelete.WorkId,
             type:"DELETE",
@@ -516,7 +516,7 @@
           this.transID=this.tableData[index].id;
           var dataEvaluate={};
           dataEvaluate.entranceId=this.transID;
-          console.log(dataEvaluate)
+
           $.ajax({
             url:"/api/v1/info/entranceWorkById",
             type:"GET",
@@ -540,7 +540,7 @@
           dataEvaluate.id=this.form.id;
           dataEvaluate.evaluation=this.form.evaluation;
           var dataEvaluateString=JSON.stringify(dataEvaluate);
-          console.log(dataEvaluate);
+
           $.ajax({
             url:"/api/v1/info/entranceWorkEvaluation",
             type:"PUT",

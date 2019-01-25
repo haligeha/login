@@ -108,7 +108,7 @@
             //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
             url: "/api/v1/user/alldevices?limit=" + showNum,
             success: function (msg) {
-              console.log("信息获取成功" + msg)
+
               vm.tableData = msg;
               var last = vm.tableData.length - 1;
               vm.nextDeviceId = vm.tableData[last].id;
@@ -117,7 +117,7 @@
               vm.preDeviceNameArr.push(vm.tableData[last].name);
             },
             error: function (err) {
-              alert("信息获取失败");
+              console.log("信息获取失败");
             }
           })
           //         nextDeviceId = tableData[last].id;
@@ -133,7 +133,10 @@
         handleFilterRange: function () {
           var vm = this;
           if (vm.search === '') {
-            alert("搜索条件不能为空");
+            this.$message({
+              message: '搜索条件为空',
+              type: 'warning'
+            });
           }
           else {
             var data = {};
@@ -149,15 +152,13 @@
                 vm.tableData = msg;
               },
               error: function (err) {
-                alert("加载搜索失败")
+               console.log(err);
               }
             })
           }
         },
         nextDeviceInfo: function () {
           var vm = this;
-          console.log(vm.nextDeviceId);
-          console.log(vm.nextDeviceName);
           var prePageUrl = "/api/v1/user/alldevices?limit=9" + "&idOffset=" + vm.nextDeviceId + "&textOffset=" + vm.nextDeviceName;
           if (vm.nextDeviceId && vm.nextDeviceName) {
             $.ajax({
@@ -165,7 +166,10 @@
               type: "GET",
               success: function (msg) {
                 if (msg.length === 0) {
-                  alert("当前已是最后一页！");
+                  this.$message({
+                    message: '当前为最后一页',
+                    type: 'success'
+                  });
                 }
                 else {
                   vm.pageNum++;
@@ -180,7 +184,7 @@
 
               },
               error: function (err) {
-                alert("当前已是最后一页！");
+                console.log("err")
               }
             });
           }

@@ -331,7 +331,7 @@
           data:pageData,
           success:function (msg) {
             console.log("信息获取成功")
-            console.log(msg)
+
             vm.tableDataSup=msg;
           },
           error:function (err) {
@@ -446,7 +446,6 @@
         },
       handleEditSupConfirm(){
         var vm=this;
-        console.log(this.form)
         var editForm=JSON.stringify(this.form);
         $.ajax({
           url:"/api/v1/info/supplies",
@@ -469,7 +468,7 @@
         this.dialogDeleteVisible=true;
         const index=this.tableDataSup.indexOf(row);
         this.transID=this.tableDataSup[index].supply_id;
-        console.log(this.transID);
+
       },
       handleDeleteConfirm(){
         var vm=this;

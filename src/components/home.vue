@@ -14,17 +14,17 @@
     </div>
 
     <ul class="nav navbar-top-links navbar-right">
-      <li><a class="dropdown-button waves-effect waves-dark" href="#!" data-activates="dropdown1"><i class="fa fa-user fa-fw"></i> <b>John Doe</b> <i class="material-icons right">arrow_drop_down</i></a></li>
+      <li><a class="dropdown-button waves-effect waves-dark" href="#!" data-activates="dropdown1"><i class="fa fa-user fa-fw"></i> <b>{{userName}}</b></a></li>
     </ul>
   </nav>
   <nav class="navbar-default navbar-side" role="navigation">
     <div class="sidebar-collapse">
       <ul class="nav" id="main-menu">
         <li>
-          <router-link to="/splitScreen" class="active-menu waves-effect waves-dark"><i class="fa fa-dashboard"></i> 视频</router-link>
+          <router-link to="/gis" class="waves-effect waves-dark"><i class="fa fa-qrcode"></i>地图模块</router-link>
         </li>
         <li>
-          <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i> 视频2<span class="fa arrow"></span></a>
+          <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i> 视频<span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
 
             <li>
@@ -47,36 +47,25 @@
         <li>
           <router-link to="/tables" class="waves-effect waves-dark"><i class="fa fa-qrcode"></i>入廊作业</router-link>
         </li>
-        <li>
-          <router-link to="/gis" class="waves-effect waves-dark"><i class="fa fa-qrcode"></i>WebGis</router-link>
-        </li>
+
         <li>
           <router-link to="/forms" class="waves-effect waves-dark"><i class="fa fa-table"></i> 应急预案 </router-link>
         </li>
-
-        <!--  <router-link to="/empty" class="waves-effect waves-dark"><i class="fa fa-fw fa-file"></i> 员工信息</router-link>
-        </li>-->
         <li>
           <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i> 应急资源<span class="fa arrow"></span></a>
           <ul class="nav nav-second-level">
+
             <li>
-              <a href="#">应急救援人员物资数据<span class="fa arrow"></span></a>
+              <router-link to="/goods">应急救援物资</router-link>
+            </li>
+            <!--  <a href="#">应急救援人员物资数据<span class="fa arrow"></span></a>
               <ul class="nav nav-third-level">
                 <li>
                   <router-link to="/goods">应急救援物资</router-link>
                 </li>
-                <li>
-                  <router-link to="/equipment">应急救援装备</router-link>
-                </li>
-                <li>
-                  <router-link to="/rescueTeam">应急救援队伍</router-link>
-                </li>
-                <li>
-                  <router-link to="/shelter">应急避难场所</router-link>
-                </li>
               </ul>
+           -->
 
-            </li>
 
 
 
@@ -94,13 +83,19 @@
 
 <script>
     export default {
+      data(){
+        return{
+          userName:''
+        }
+      },
       created: function () {
+        this.userName=localStorage.getItem("name");
         this.getSessionId()
       },
       methods:{
         getSessionId:function(){
           var vm=this;
-          console.log(document.cookie)
+
           $.ajax({
             type: "GET",
           contentType: "application/json; charset=utf-8",
@@ -111,17 +106,17 @@
             //  header:"Access-Control-Allow-Origin:  http://10.112.17.185:8100",
             url: "/api/v1/user/authorize",
             success: function (msg,res) {
-              console.log(msg)
+
               var ses=JSON.parse(msg)
             //  var session=msg.session
               var mm=ses.session;
-              console.log(mm)
+
               vm.setCookie("JSESSIONID",mm,7000)
-           //  console.log(msg)
+
 
             },
             error: function (err) {
-              console.log("加载0000失败");
+              console.log("加载失败");
             }
           });
         },
@@ -153,5 +148,14 @@
 </script>
 
 <style scoped>
+  /*.router-link-active,.active-menu{
+
+  }*/
+  .router-link-active,.myActive{
+    color: cornflowerblue;
+    font-weight: bold;
+    font-style: italic;
+    font-size: larger;
+  }
 
 </style>

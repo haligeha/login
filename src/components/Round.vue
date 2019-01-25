@@ -38,11 +38,12 @@
 
       },*/
       mounted: function () {
-        this.getResources()
+     // this.getResources()
+        this.getRes()
         console.log("mounted")
       },
       methods:{
-        getResources:function(){
+ /*      getResources:function(){
           var vm = this;
           $.ajax({
             type: "GET",
@@ -63,13 +64,19 @@
               });
             }
           });
-        },
+        },*/
         getRes:function(){
           var vm=this
           vm.player = new Clappr.Player({
-            source: "rtmp://10.112.17.185/liveapp/haikang1",
+            source: "rtmp://39.104.186.210/oflaDemo/haikang1",
             parentId: '#player',
-            plugins: [RTMP],
+       //     plugins: [RTMP],
+            plugins: [MarqueeOverlay,RTMP],
+            marqueePluginConfig:{
+              textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+              duration:10000,
+              direction:'left'
+            },
             autoPlay: !0,
             width: 800,
             height: 800,
@@ -142,8 +149,10 @@
          var vm=this;
          var m = vm.index+1
           vm.index= m%4;
-       //   vm.resource = vm.resources[vm.index];
-          vm.resource = "rtmp://10.112.17.185/liveapp/haikang2";
+         vm.resources=["rtmp://39.104.186.210/oflaDemo/haikang1","rtmp://39.104.186.210/oflaDemo/haikang2","rtmp://39.104.186.210/oflaDemo/haikang3"]
+         vm.resource = vm.resources[vm.index];
+       //   vm.resource = "rtmp://39.104.186.210/oflaDemo/haikang2";
+         vm.resource=vm.resources[vm.index]
           console.log(vm.resource)
           vm.player.configure({
               source:vm.resource

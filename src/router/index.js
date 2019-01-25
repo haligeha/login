@@ -13,6 +13,7 @@ import Round from '@/components/Round.vue'
 Vue.use(Router);
 
 const router = new Router({
+
   routes: [
     {
       path: '/',
@@ -70,9 +71,10 @@ const router = new Router({
           path: '/deviceList',
           component: DeviceList
         }
-      ]
+      ],redirect:'/gis'
     }
-  ]
+  ],
+  linkActiveClass:'myActive'
 });
 
 // 导航守卫
@@ -82,7 +84,7 @@ router.beforeEach((to, from, next) => {
     next();
   }
   else {
-    console.log("hellohi");
+
     let token = localStorage.getItem('Authorization');
     if (token === null || token === '') {
       next('/login');
