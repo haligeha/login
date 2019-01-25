@@ -140,7 +140,7 @@
             data.siteId = this.search;
             data.limit = 9;
             $.ajax({
-              url: "/api/v1/info/devicesBySiteId",
+              url: "/api/v1/user/devicesBySiteId",
               type: "GET",
               //   contentType:"application/json",
               dataType: "JSON",
@@ -158,7 +158,7 @@
           var vm = this;
           console.log(vm.nextDeviceId);
           console.log(vm.nextDeviceName);
-          var prePageUrl = "/api/v1/info/alldevices?limit=9" + "&idOffset=" + vm.nextDeviceId + "&textOffset=" + vm.nextDeviceName;
+          var prePageUrl = "/api/v1/user/alldevices?limit=9" + "&idOffset=" + vm.nextDeviceId + "&textOffset=" + vm.nextDeviceName;
           if (vm.nextDeviceId && vm.nextDeviceName) {
             $.ajax({
               url: prePageUrl,
@@ -180,7 +180,7 @@
 
               },
               error: function (err) {
-                alert("当前已是最后一页！");
+                console.log("当前已是最后一页！");
               }
             });
           }
