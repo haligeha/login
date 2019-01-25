@@ -589,6 +589,7 @@
           let Str = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
           return Str
         };
+  //      var m= dayobject.day
         var m=GMTToStr(dayobject.day)
 
         this.form.calendar_date = Math.round(new Date(m).getTime()/1000).toString();
@@ -768,8 +769,8 @@
           var D = date.getDate();
           return Y + M + D
         };
-
-        this.form.calendar_date = Math.round(new Date(this.form.calendar_date).getTime()/1000).toString();
+        var mx=new Date(this.form.calendar_date)
+        this.form.calendar_date = Math.round(new Date(mx).getTime()/1000).toString();
         this.calendar=Timestamp(this.form.calendar_date);
         this.form.create_date = Math.round(new Date(this.form.create_date).getTime()/1000).toString();
 

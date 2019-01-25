@@ -1560,7 +1560,7 @@
       //////////查看视频///////
       videoCkeck(row)
       {
-        let routeData = this.$router.resolve({ path: '/hello' });
+        let routeData = this.$router.resolve({ path: '/splitScreen' });
         window.open(routeData.href, '_blank');
         //this.$router.go({'/hello')};
       },
