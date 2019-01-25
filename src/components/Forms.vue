@@ -400,7 +400,7 @@
         $.ajax({
           type: "GET",
           dataType: "JSON",
-          url: "http://10.112.17.185:8100/api/v1/info/emergencyByPage",
+          url: "/api/v1/info/emergencyByPage",
           contentType: "application/json;charset=utf-8",
           data: pageData,
           success: function (msg) {
@@ -425,7 +425,7 @@
         $.ajax({
           type:"GET",
           dataType:"JSON",
-          url:"http://10.112.17.185:8100/api/v1/info/showFile/"+i+"/0",
+          url:"/api/v1/info/showFile/"+i+"/0",
           contentType: "application/json;charset=utf-8",
           success:function (msg) {
             console.log(msg);
@@ -439,7 +439,7 @@
         $.ajax({
           type:"GET",
           dataType:"JSON",
-          url:"http://10.112.17.185:8100/api/v1/info/showFile/"+i+"/1",
+          url:"/api/v1/info/showFile/"+i+"/1",
           contentType: "application/json;charset=utf-8",
           success:function (msg) {
             console.log(msg);
@@ -451,7 +451,7 @@
       getTotalPage() {
         var vm = this;
         $.ajax({
-          url: "http://10.112.17.185:8100/api/v1/info/emergencyCount",
+          url: "/api/v1/info/emergencyCount",
           type: "GET",
           dataType: "JSON",
           success: function (msg) {
@@ -500,7 +500,7 @@
         dataAdd=this.form;
         var dataAddString=JSON.stringify(dataAdd);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/emergency",
+          url:"/api/v1/info/emergency",
           type:"POST",
           contentType:"application/json;charset=utf-8",
           dataType:"JSON",
@@ -526,7 +526,7 @@
         dataEdit.emergencyId=this.transID;
         console.log(dataEdit);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/emergencyById",
+          url:"/api/v1/info/emergencyById",
           type:"GET",
           contentType:"application/json",
           dataType:"JSON",
@@ -558,7 +558,7 @@
         console.log(this.form);
         var editForm=JSON.stringify(this.form);
         $.ajax({
-          url:"http://10.112.17.185:8100/api/v1/info/emergency",
+          url:"/api/v1/info/emergency",
           type:"PUT",
           contentType:"application/json",
           dataType:"JSON",
@@ -587,7 +587,7 @@
         var dataDelete = {}
         dataDelete.id = this.transID;
         $.ajax({
-          url: "http://10.112.17.185:8100/api/v1/info/emergency?id="+dataDelete.id,
+          url: "/api/v1/info/emergency?id="+dataDelete.id,
           type: "DELETE",
           contentType: "application/json",
           dataType: "text",
