@@ -26,7 +26,7 @@
         <!--<el-button type="primary" onclick="showFrame()">设备搜索</el-button>-->
         <el-button type="primary" @click="showWarning">查看报警事件</el-button>
         <el-button type="primary" @click="dialogDraw=true">绘制功能</el-button>
-        <el-button type="primary" @click="trackAll">历史巡检线路</el-button>
+        <!-- <el-button type="primary" @click="trackAll">历史巡检线路</el-button> -->
       </ol>
 
     </div>
@@ -285,6 +285,10 @@
   var preDeviceId = [];//用于查找上一页
   var preDeviceName = [];//用于查找上一页
   var pageNum = 1;//记录当前页面
+
+  var polylinePointSum3=[]
+  var carMk1;
+  var tidArray=[]
   export default {
     filters:{
 
@@ -333,9 +337,6 @@
     },
     methods: {
       ready: function(){
-        for (var i = 0; i <= 5; i++) {
-          console.log(parseInt(Math.random()*(9+1),10))
-        }
         window.tenantId=localStorage.getItem("tenant_id")
         //console.log(localStorage.getItem("auth"))
         var vm=this
@@ -391,46 +392,6 @@
           rectangleOptions: styleOptions //矩形的样式
         });
         window.drawingManager=drawingManager
-
-// var polylinePointSum3=[]
-// var i=0;
-//  var evt =[{"tenantId":"2","staffName":"err","data":[{"longtitude":101,"latitude":51}]},
-//  {"tenantId":"2","staffName":"err","data":[{"longtitude":100,"latitude":50}]},
-//  {"tenantId":"2","staffName":"err","data":[{"longtitude":102,"latitude":52}]},
-//  {"tenantId":"2","staffName":"err","data":[{"longtitude":103,"latitude":53}]},]
-//             var myIcon = new BMap.Icon("http://lbsyun.baidu.com/jsdemo/img/Mario.png", new BMap.Size(32, 70), {    //小车图片
-//                         //offset: new BMap.Size(0, -5),    //相当于CSS精灵
-//                         imageOffset: new BMap.Size(0, 0)    //图片的偏移量。为了是图片底部中心对准坐标点。
-//                         });
-//         var carMk1
-//         var loop=setInterval(function(){
-
-//                         var row1 = {lng:evt[i].data[0].longtitude,lat:evt[i].data[0].latitude};
-//                         polylinePointSum3.push(row1);
-//                 if(polylinePointSum3.length==1)
-//                         {
-//                             carMk1= new BMap.Marker(polylinePointSum3[0],{icon:myIcon});
-//                             map.addOverlay(carMk1);
-//                         }
-
-//                         if(polylinePointSum3.length>1)
-//                         {
-//                             var polyline = new BMap.Polyline([
-//                             new BMap.Point(polylinePointSum3[polylinePointSum3.length-2].lng,polylinePointSum3[polylinePointSum3.length-2].lat),
-//                             new BMap.Point(polylinePointSum3[polylinePointSum3.length-1].lng,polylinePointSum3[polylinePointSum3.length-1].lat)
-//                             ], {strokeColor:"red", strokeWeight:6, strokeOpacity:0.5});
-//                             map.addOverlay(polyline);
-//                             //console.log(polylinePointSum3[j-1])
-//                             carMk1.setPosition(new BMap.Point(polylinePointSum3[polylinePointSum3.length-1].lng,polylinePointSum3[polylinePointSum3.length-1].lat));
-//                         }
-
-// i++;
-
-//         },2000)
-
-
-
-
 
         window.getSites=function()
         {
@@ -1415,34 +1376,23 @@
       ///////报警状态改变//////////
       warningChange(row)
       {
+        var data={id:row.id,status:"false"}
+        console.log(data)
+        console.log(JSON.stringify(data))
         $.ajax({
-          url: '/api/v1/map/warning?warnId='+row.id,
-          type: 'get',
-          async : false,
-          dataType: 'json',
-          contentType: 'application/json;',
+          url:'/api/v1/map/warning',
+          data:JSON.stringify(data),
+          type:'put',//提交方式
+          //dataType: 'json',
+          contentType: "application/json",
 
-          error:function(err){
-            console.log(err)
-          },
-          success: function(req) {
+          success: function(req){
             console.log(req)
-            console.log(JSON.stringify({id:req.id,tenantid:tenantId,deviceid:req.deviceid,content:req.content,createdat:req.createdat,status:"true"}))
-            $.ajax({
-              url:'/api/v1/map/warning',
-              data:JSON.stringify({id:req.id,tenantid:tenantId,deviceid:req.deviceid,content:req.content,createdat:req.createdat,status:"true"}),
-              type:'put',//提交方式
-              //dataType: 'json',
-              contentType: "application/json",
-
-              success: function(req){
-                console.log(req)
-              },
-              error:function(error)
-              {
-                console.log(error)
-              }
-            });
+            row.status="已查看"
+          },
+          error:function(error)
+          {
+            console.log(error)
           }
         });
       },
@@ -1576,7 +1526,7 @@
       {
         vm.trackAllTableData=[]
         $.ajax({
-          url: "http://10.112.17.185:8101/api/v1/map/trackAll",
+          url: "/api/v1/map/trackAll",
           contentType: "application/json; charset=utf-8",//post请求必须
           dataType: "json",
           type: "get",
@@ -1599,9 +1549,8 @@
       },
       trackCheck(row)
       {
-        //@TODO url带有http
         $.ajax({
-          url: "http://10.112.17.185:8101/api/v1/map/track?trackId="+row,
+          url: "/api/v1/map/track?trackId="+row,
           contentType: "application/json; charset=utf-8",//post请求必须
           dataType: "json",
           type: "get",
@@ -1648,14 +1597,14 @@
       initWebSocket()
       {
         //初始化报警weosocket 　　　　　　　
-// 　　　　　　　　const wsuri = "ws://39.104.189.84:8800/api/warning/webSocket";//ws地址
-// 　　　　　　　　this.websocket = new WebSocket(wsuri);
-// 　　　　　　　　this.websocket.onopen = this.websocketonopen;
-// 　　　　　　　　this.websocket.onerror = this.websocketonerror;
-// 　　　　　　　　this.websocket.onmessage = this.websocketonmessage;
-// 　　　　　　　　this.websocket.onclose = this.websocketclose;
+        const wsuri = "ws://39.104.189.84:8800/api/warning/webSocket";//ws地址
+        this.websocket = new WebSocket(wsuri);
+        this.websocket.onopen = this.websocketonopen;
+        this.websocket.onerror = this.websocketonerror;
+        this.websocket.onmessage = this.websocketonmessage;
+        this.websocket.onclose = this.websocketclose;
         //APP定位websocket
-        const wsuriApp = "ws://10.112.17.185:8102/api/v1/map/websocket?username=pf_3&usertype=consumer&sessionId=pf";//ws地址
+        const wsuriApp = "ws://39.104.189.84:30270/api/v1/map/websocket?username=pf_3&usertype=consumer&sessionId=Sunny";//ws地址
         //const protocol="{"usertype":"consumer","username":"pf_3","sessionId":"pf"}"
         this.websocketApp = new WebSocket(wsuriApp);
         this.websocketApp.onopen = this.websocketonopenApp;
@@ -1759,55 +1708,61 @@
       websocketclose(e)
       { //关闭
         console.log("connection closed (" + e.code + ")");
+        console.log(e)
       },
-
       ///////////App定位ws////////
       websocketonopenApp() {
         console.log("WebSocket连接成功-App");
       },
       websocketonmessageApp(evt){
-        var tidArray=[]
+        var translateCallback = function (data){
+          console.log(data.points[0])
+          if(data.status === 0) {
+            var row1 = {lng:data.points[0].lng,lat:data.points[0].lat};
+            polylinePointSum3.push(row1);
+            //console.log(row1)
+            //console.log(polylinePointSum3)
+            if(polylinePointSum3.length==1)
+            {
+              carMk1= new BMap.Marker(polylinePointSum3[0],{icon:myIcon});
+              map.addOverlay(carMk1);
+            }
+
+            if(polylinePointSum3.length>1)
+            {
+              var polyline = new BMap.Polyline([
+                new BMap.Point(polylinePointSum3[polylinePointSum3.length-2].lng,polylinePointSum3[polylinePointSum3.length-2].lat),
+                new BMap.Point(polylinePointSum3[polylinePointSum3.length-1].lng,polylinePointSum3[polylinePointSum3.length-1].lat)
+              ], {strokeColor:"red", strokeWeight:6, strokeOpacity:0.5});
+              map.addOverlay(polyline);
+              //console.log(polylinePointSum3[j-1])
+              carMk1.setPosition(new BMap.Point(polylinePointSum3[polylinePointSum3.length-1].lng,polylinePointSum3[polylinePointSum3.length-1].lat));
+            }
+          }
+        }
         // if(!(tidArray.indexOf(evt.tenantId) > -1))
         // {
         //     tidArray.push(evt.tenantId)
         // }
         // console.log(tidArray)
-        console.log(evt.data)
+        //console.log(evt.data)
         //console.log(JSON.parse(evt.data))
-
-        //console.log(JSON.parse(evt.data)['data'][0])
+        console.log(JSON.parse(evt.data)['data'][0])
         var req=JSON.parse(evt.data)['data'][0]
+        var ggPoint = new BMap.Point(req.longtitude,req.latitude);
         //console.log(JSON.parse(evt.data).data)
-        var polylinePointSum3=[]
+        //parseInt(Math.random()*(9+1),10)
         var myIcon = new BMap.Icon("http://lbsyun.baidu.com/jsdemo/img/Mario.png", new BMap.Size(32, 70), {
           imageOffset: new BMap.Size(0, 0)    //图片的偏移量。为了是图片底部中心对准坐标点。
         });
-        var carMk1;
-        console.log(Math.random()*5)
-        var row1 = {lng:req.longtitude,lat:req.latitude};
+
+
+        var convertor = new BMap.Convertor();
+        var pointArr = [];
+        pointArr.push(ggPoint);
+        convertor.translate(pointArr, 1, 5, translateCallback)
+        //map.setCenter(new BMap.Point(req.longtitude, req.latitude))
         //console.log(row1)
-
-        polylinePointSum3.push(row1);
-        //console.log(polylinePointSum3)
-
-
-        if(polylinePointSum3.length==1)
-        {
-          carMk1= new BMap.Marker(polylinePointSum3[0],{icon:myIcon});
-          map.addOverlay(carMk1);
-        }
-
-        if(polylinePointSum3.length>1)
-        {
-          var polyline = new BMap.Polyline([
-            new BMap.Point(polylinePointSum3[polylinePointSum3.length-2].lng,polylinePointSum3[polylinePointSum3.length-2].lat),
-            new BMap.Point(polylinePointSum3[polylinePointSum3.length-1].lng,polylinePointSum3[polylinePointSum3.length-1].lat)
-          ], {strokeColor:"red", strokeWeight:6, strokeOpacity:0.5});
-          map.addOverlay(polyline);
-          //console.log(polylinePointSum3[j-1])
-          carMk1.setPosition(new BMap.Point(polylinePointSum3[polylinePointSum3.length-1].lng,polylinePointSum3[polylinePointSum3.length-1].lat));
-        }
-
       },
 
       /////////时间戳转换//////
