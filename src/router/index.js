@@ -6,6 +6,7 @@ import splitScreen from '@/components/splitScreen.vue'
 import Forms from '@/components/Forms.vue'
 import Tables from '@/components/Tables.vue'
 import UIElement from '@/components/UIElement.vue'
+import Calendar from '@/components/calendar.vue'
 import Goods from '@/components/Goods.vue'
 import gis from '@/components/gis.vue'
 import DeviceList from '@/components/DeviceList.vue'
@@ -54,6 +55,11 @@ const router = new Router({
         {
           path: '/uielement',
           component: UIElement
+        },
+
+        {
+          path: '/calendar',
+          component:Calendar
         },
         {
           path: '/goods',

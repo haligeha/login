@@ -42,6 +42,9 @@
           <router-link to="/uielement"class="waves-effect waves-dark"><i class="fa fa-desktop"></i> 巡检计划</router-link>
         </li>
         <li>
+          <router-link to="/calendar"class="waves-effect waves-dark"><i class="fa fa-desktop"></i> 巡检日历</router-link>
+        </li>
+        <li>
           <router-link to="/deviceList" class="waves-effect waves-dark"><i class="fa fa-bar-chart-o"></i> 设备信息</router-link>
            </li>
         <li>
@@ -116,7 +119,7 @@
 
             },
             error: function (err) {
-              console.log("加载失败");
+       //       console.log("加载失败");
             }
           });
         },
@@ -124,9 +127,9 @@
           var d = new Date();
           d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
           var expires = "expires=" + d.toUTCString();
-          console.info(cname + "=" + cvalue + "; " + expires);
+      //    console.info(cname + "=" + cvalue + "; " + expires);
           document.cookie = cname + "=" + cvalue + "; " + expires;
-          console.info(document.cookie);
+      //    console.info(document.cookie);
         },
         //获取cookie
         getCookie: function (cname) {

@@ -24,12 +24,12 @@
       <el-table
         :data="tableData"
         style="width:98%;left: 20px;">
-        <el-table-column label="设备ID" prop="id" sortable="" width="250%" align="center">
+        <el-table-column label="设备ID" prop="id" sortable="" width="150%" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.id}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="设备名" prop="deviceName" width="120%" align="center">
+        <el-table-column label="设备名" prop="deviceName" width="100%" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.name}}</span>
           </template>
@@ -44,7 +44,7 @@
             <span>{{scope.row.manufacture}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="设备类型" prop="deviceType" align="center"width="90%">
+        <el-table-column label="设备类型" prop="deviceType" align="center"width="80%">
           <template slot-scope="scope">
             <span>{{scope.row.deviceType}}</span>
           </template>
@@ -64,15 +64,49 @@
             <span>{{scope.row.location}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="站点ID" prop="siteId" align="center"width="90%">
+        <el-table-column label="站点ID" prop="siteId" align="center"width="80%">
           <template slot-scope="scope">
             <span>{{scope.row.siteId}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100%" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini" type="primary" @click="deviceCheck(scope.row.id)">查看详情</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <el-button @click="preDeviceInfo()">上一页</el-button>
       <el-button @click="nextDeviceInfo()">下一页</el-button>
+
+      <el-dialog title="设备详情":visible.sync="dialogDeviceDetail" append-to-body @close='handleClose'>
+        <el-input v-model="form.dialogDeviceDetail" :disabled="true" size="mini"></el-input>
+        <h4 >-----最新遥测-----</h4>
+        <el-table :data="DeviceDetailTableData">
+          <el-table-column property="updateTime" label="最后更新时间" ></el-table-column>
+          <el-table-column property="updateKey" label="键" ></el-table-column>
+          <el-table-column property="updateValue" label="值"></el-table-column>
+        </el-table>
+        <h4 >-----控制面板-----</h4>
+        <el-row >
+          <el-col :span="8" v-for="(x) in control">
+            <el-form >
+              <span>{{x.serviceName}}</span>
+              <el-form  v-for="(w,index) in x.serviceBody.params">
+                <el-form-item >
+                  <el-col :span="8">{{w.key}}({{index}})</el-col>
+                  <el-col :span="8">
+                    <el-switch v-if="w.type==2" v-model="w.value" ></el-switch>
+                    <el-input v-if="w.type==3" v-model="w.value" type="number"></el-input>
+                    <el-input v-if="w.type==1" v-model="w.value" ></el-input>
+                  </el-col>
+                </el-form-item>
+              </el-form>
+              <el-button size="mini" @click="controlConfirm(x)">确定</el-button>
+            </el-form>
+          </el-col>
+        </el-row>
+      </el-dialog>
     </div>
 
   </div>
@@ -92,7 +126,13 @@
           preDeviceName: '',//用于设备列表展示时向前翻页
           nextDeviceId: '',//用于设备列表展示时向后翻页
           nextDeviceName: '',//用于设备列表展示时向后翻页
+          dialogSiteDevice:false,//用于设备详情
+          dialogDeviceDetail:false,
+          form:{},
+          DeviceDetailTableData:[],
+          control:'',
           pageNum: 1//用于记录当前页号
+
         }
       },
       created: function () {
@@ -189,7 +229,7 @@
             });
           }
         },
-          preDeviceInfo:function () {
+        preDeviceInfo:function () {
             var vm = this;
             var url = '';
             if (vm.pageNum === 1) {
@@ -221,7 +261,137 @@
 
               });
             }
+          },
+        ////////////////报警设备////////
+        deviceCheck(row)
+        {
+          var vm=this;
+          var abilityType=[]
+
+          $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: '/api/v1/deviceaccess/data/alllatestdata/'+row,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            error:function(err){
+              console.log(err)
+            },
+            success: function(req) {
+              console.log(req)
+              vm.dialogDeviceDetail=true
+              for (var i = 0; i < req.length; i++) {
+                var deviceData = {};
+                deviceData.updateTime = vm.timestamp(req[i].ts);
+                deviceData.updateKey = req[i].key;
+                deviceData.updateValue = req[i].value;
+                vm.DeviceDetailTableData.push(deviceData);
+              }
+
+            }
+          });
+
+          $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: '/api/v1/deviceaccess/device/'+row,
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            error:function(err){
+              console.log(err)
+            },
+            success: function(req) {
+              vm.form.dialogDeviceDetail=req.name
+              console.log(req)
+              console.log('/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model)
+              $.ajax({
+                headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+                url: '/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model,
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json;charset=UTF-8',
+                error:function(err){
+                  console.log(err)
+                  vm.control=[]
+                },
+                success: function(req) {
+
+                  console.log(req)
+                  var control=[]
+                  for (var i = 0; i < req.length; i++) {
+                    var abilityDesJson = JSON.parse(req[i].abilityDes);//将所有abilityDes（string）转成JSON
+                    //console.log(abilityDesJson);
+                    control.push(abilityDesJson)
+                    var params = abilityDesJson.serviceBody.params;
+                    vm.control1=params
+
+
+                  }
+                  control.deviceid=row;
+                  vm.control=control
+                  console.log(control)
+
+                }
+              });
+            }
+          });
+
+
+        },
+        ///////控制确定///////////
+        controlConfirm(e)
+        {
+          console.log(e)
+          console.log(e.serviceBody)
+          console.log(e.serviceBody.params.length)
+          var json = '{';
+          for (var i = 0; i < e.serviceBody.params.length; i++) {
+            json += '"' + e.serviceBody.params[i].key + '":"' + e.serviceBody.params[i].value + '",';
           }
+          json += '"' + "serviceName" + '":"' + e.serviceName + '",';
+          json += '"' + "methodName" + '":"' + e.serviceBody.methodName+ '"' ;
+          json += '}';
+          console.log(json)
+          var requestId=parseInt(Math.random()*(10000-10+1)+10,10);
+          $.ajax({
+            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
+            url: "/api/v1/deviceaccess/rpc/"+vm.control.deviceid+'/'+requestId,
+            data: json,
+            contentType: "application/json; charset=utf-8",//post请求必须
+            dataType: "text",
+            type: "POST",
+            success: function (req) {
+              console.log(req)
+              Message.success({message: '控制成功！'});
+            },
+            error: function (err) {
+              console.log(err)
+              Message.error({message: '控制失败！'});
+            }
+          });
+
+
+        },
+
+        //时间戳和年月日的转化
+        timestamp(int)
+        {
+
+          var val = JSON.parse(int)
+          let date = new Date(val);
+          let y = date.getFullYear();
+          let MM = date.getMonth() + 1;
+          MM = MM < 10 ? ('0' + MM) : MM;
+          let d = date.getDate();
+          d = d < 10 ? ('0' + d) : d;
+          let h = date.getHours();
+          h = h < 10 ? ('0' + h) : h;
+          let m = date.getMinutes();
+          m = m < 10 ? ('0' + m) : m;
+          // let s = date.getSeconds();
+          // s = s < 10 ? ('0' + s) : s;
+          return y + '-' + MM + '-' + d + ' ' + h + ':' + m ;
+        }
         }
 
     }
