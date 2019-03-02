@@ -20,6 +20,15 @@
           :value="item.value">
         </el-option>
       </el-select>
+   <!--   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+      <el-select v-model="value5" multiple placeholder="请选择">
+        <el-option
+          v-for="item in option"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>-->
       <div id="video1" v-show="false">
         <div id="player">
 
@@ -47,17 +56,17 @@
           <div id="player5">
           </div>
 
-        <div id="player6">
-        </div>
+          <div id="player6">
+          </div>
 
-        <div id="player7">
-        </div>
+          <div id="player7">
+          </div>
 
-        <div id="player8">
-        </div>
+          <div id="player8">
+          </div>
 
-        <div id="player9">
-        </div>
+          <div id="player9">
+          </div>
       </div>
 
     <!--  <div id="buttons">
@@ -77,6 +86,7 @@
 
 </template>
 <script>
+
   export default {
     data() {
       return {
@@ -85,14 +95,31 @@
           label: '1=1*1'
         }, {
           value: '2',
-          label: '2=2*2'
+          label: '4=2*2'
         },
           {
             value: '3',
             label: '6=5+1'
           }
         ],
-        value: ''
+        value: '',
+        option: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+        value5: [],
       }
     },
     created: function () {
@@ -499,6 +526,7 @@
 
     },
     methods: {
+
 /*
       up: function () {
         $.ajax({
@@ -603,22 +631,13 @@
 
       video:function(a){
         if(a=="1"){
-          console.log(a+"1111");
           document.getElementById("video1").style.display="block";
           document.getElementById("video2").style.display="none";
           document.getElementById("video3").style.display="none";
           console.log(document.getElementById("video1"));
 
-          /*     $(obj).next("div").find("div").each(function(){
-                 $(this).hide();
-                 console.log( $(obj).next("div").find("video"));
-               });
-               $("#div" + obj.value).show();
-               $("#video"+obj.value).show();*/
-
         }
         else if(a=="2"){
-          console.log(a+"22222");
           document.getElementById("video1").style.display="none";
           document.getElementById("video2").style.display="block";
           document.getElementById("video3").style.display="none";

@@ -38,11 +38,11 @@
               </ul>
 
             </li>
-        <li>
+       <!-- <li>
           <router-link to="/uielement"class="waves-effect waves-dark"><i class="fa fa-desktop"></i> 巡检计划</router-link>
-        </li>
+        </li>-->
         <li>
-          <router-link to="/calendar"class="waves-effect waves-dark"><i class="fa fa-desktop"></i> 巡检日历</router-link>
+          <router-link to="/calendar"class="waves-effect waves-dark"><i class="fa fa-desktop"></i>巡检计划</router-link>
         </li>
         <li>
           <router-link to="/deviceList" class="waves-effect waves-dark"><i class="fa fa-bar-chart-o"></i> 设备信息</router-link>
@@ -53,6 +53,23 @@
 
         <li>
           <router-link to="/forms" class="waves-effect waves-dark"><i class="fa fa-table"></i> 应急预案 </router-link>
+        </li>
+        <li>
+          <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i>预案审批<span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level">
+
+            <li>
+              <router-link to="/undone">未审批</router-link>
+            </li>
+            <li>
+              <router-link to="/done">已审批</router-link>
+            </li>
+            <li>
+              <router-link to="/all">审批结果</router-link>
+            </li>
+
+          </ul>
+
         </li>
         <li>
           <a href="#" class="waves-effect waves-dark"><i class="fa fa-sitemap"></i> 应急资源<span class="fa arrow"></span></a>
@@ -68,9 +85,6 @@
                 </li>
               </ul>
            -->
-
-
-
 
           </ul>
         </li>

@@ -81,7 +81,22 @@
 
       <el-dialog title="设备详情":visible.sync="dialogDeviceDetail" append-to-body @close='handleClose'>
         <el-input v-model="form.dialogDeviceDetail" :disabled="true" size="mini"></el-input>
-        <h4 >-----最新遥测-----</h4>
+
+     <!--   <h4 >-----历史数据-----</h4>
+        <label>起始时间：</label>
+        <el-date-picker
+          v-model="startTime"
+          type="datetime"
+          placeholder="选择日期时间">
+        </el-date-picker>
+        <label>终止时间：</label>
+        <el-date-picker
+          v-model="endTime"
+          type="datetime"
+          placeholder="选择日期时间">
+        </el-date-picker>
+        <i class="el-icon-search" @click="subTime"></i>-->
+        <h4>-----最新遥测-----</h4>
         <el-table :data="DeviceDetailTableData">
           <el-table-column property="updateTime" label="最后更新时间" ></el-table-column>
           <el-table-column property="updateKey" label="键" ></el-table-column>
@@ -126,11 +141,14 @@
           preDeviceName: '',//用于设备列表展示时向前翻页
           nextDeviceId: '',//用于设备列表展示时向后翻页
           nextDeviceName: '',//用于设备列表展示时向后翻页
-          dialogSiteDevice:false,//用于设备详情
-          dialogDeviceDetail:false,
-          form:{},
-          DeviceDetailTableData:[],
-          control:'',
+          dialogSiteDevice: false,//用于设备详情
+          dialogDeviceDetail: false,
+          startTime:'',
+          endTime:'',
+          deviceID:'',
+          form: {},
+          DeviceDetailTableData: [],
+          control: '',
           pageNum: 1//用于记录当前页号
 
         }
@@ -192,7 +210,7 @@
                 vm.tableData = msg;
               },
               error: function (err) {
-               console.log(err);
+                console.log(err);
               }
             })
           }
@@ -229,57 +247,56 @@
             });
           }
         },
-        preDeviceInfo:function () {
-            var vm = this;
-            var url = '';
-            if (vm.pageNum === 1) {
-              this.$message({
-                message: '当前为首页'
-              });
+        preDeviceInfo: function () {
+          var vm = this;
+          var url = '';
+          if (vm.pageNum === 1) {
+            this.$message({
+              message: '当前为首页'
+            });
+          }
+          else {
+            if (vm.pageNum === 2) {
+              url = "/api/v1/user/alldevices?limit=" + 9;
+            } else {
+              preDeviceId = vm.preDeviceIdArr[pageNum - 3];
+              preDeviceName = vm.preDeviceNameArr[pageNum - 3];
+              url = "/api/v1/user/alldevices?limit=９" + "&idOffset=" + preDeviceId + "&textOffset=" + preDeviceName;
             }
-            else {
-              if (vm.pageNum === 2) {
-                url = "/api/v1/user/alldevices?limit=" + 9;
-              } else {
-                preDeviceId = vm.preDeviceIdArr[pageNum - 3];
-                preDeviceName = vm.preDeviceNameArr[pageNum - 3];
-                url = "/api/v1/user/alldevices?limit=９" + "&idOffset=" + preDeviceId + "&textOffset=" + preDeviceName;
+            $.ajax({
+              url: url,
+              type: "GET",
+              success: function (msg) {
+                vm.pageNum--;
+                vm.tableData = msg;
+                var last = vm.tableData.length - 1;
+                vm.nextDeviceId = vm.tableData[last].id;
+                vm.nextDeviceName = vm.tableData[last].name;
+              },
+              error: function (err) {
+                console.log("向前翻页失败")
               }
-              $.ajax({
-                url: url,
-                type: "GET",
-                success: function (msg) {
-                  vm.pageNum--;
-                  vm.tableData = msg;
-                  var last = vm.tableData.length - 1;
-                  vm.nextDeviceId =  vm.tableData[last].id;
-                  vm.nextDeviceName = vm.tableData[last].name;
-                },
-                error: function (err) {
-                 console.log("向前翻页失败")
-                }
 
-              });
-            }
-          },
+            });
+          }
+        },
         ////////////////报警设备////////
-        deviceCheck(row)
-        {
-          var vm=this;
-          var abilityType=[]
-
+        deviceCheck(row) {
+          var vm = this;
+          var abilityType = []
+          vm.deviceID = row
           $.ajax({
-            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: '/api/v1/deviceaccess/data/alllatestdata/'+row,
+            headers: {"Authorization": "Bearer" + localStorage.getItem("auth")},
+            url: '/api/v1/deviceaccess/data/alllatestdata/' + row,
             type: 'get',
             dataType: 'json',
             contentType: 'application/json;charset=UTF-8',
-            error:function(err){
+            error: function (err) {
               console.log(err)
             },
-            success: function(req) {
+            success: function (req) {
               console.log(req)
-              vm.dialogDeviceDetail=true
+              vm.dialogDeviceDetail = true
               for (var i = 0; i < req.length; i++) {
                 var deviceData = {};
                 deviceData.updateTime = vm.timestamp(req[i].ts);
@@ -292,43 +309,43 @@
           });
 
           $.ajax({
-            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: '/api/v1/deviceaccess/device/'+row,
+            headers: {"Authorization": "Bearer" + localStorage.getItem("auth")},
+            url: '/api/v1/deviceaccess/device/' + row,
             type: 'get',
             dataType: 'json',
             contentType: 'application/json;charset=UTF-8',
-            error:function(err){
+            error: function (err) {
               console.log(err)
             },
-            success: function(req) {
-              vm.form.dialogDeviceDetail=req.name
+            success: function (req) {
+              vm.form.dialogDeviceDetail = req.name
               console.log(req)
-              console.log('/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model)
+              console.log('/api/v1/servicemanagement/ability/' + req.manufacture + '/' + req.deviceType + '/' + req.model)
               $.ajax({
-                headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-                url: '/api/v1/servicemanagement/ability/'+req.manufacture+'/'+req.deviceType+'/'+req.model,
+                headers: {"Authorization": "Bearer" + localStorage.getItem("auth")},
+                url: '/api/v1/servicemanagement/ability/' + req.manufacture + '/' + req.deviceType + '/' + req.model,
                 type: 'get',
                 dataType: 'json',
                 contentType: 'application/json;charset=UTF-8',
-                error:function(err){
+                error: function (err) {
                   console.log(err)
-                  vm.control=[]
+                  vm.control = []
                 },
-                success: function(req) {
+                success: function (req) {
 
                   console.log(req)
-                  var control=[]
+                  var control = []
                   for (var i = 0; i < req.length; i++) {
                     var abilityDesJson = JSON.parse(req[i].abilityDes);//将所有abilityDes（string）转成JSON
                     //console.log(abilityDesJson);
                     control.push(abilityDesJson)
                     var params = abilityDesJson.serviceBody.params;
-                    vm.control1=params
+                    vm.control1 = params
 
 
                   }
-                  control.deviceid=row;
-                  vm.control=control
+                  control.deviceid = row;
+                  vm.control = control
                   console.log(control)
 
                 }
@@ -338,9 +355,14 @@
 
 
         },
+
+        //关闭
+        handleClose(){
+
+        },
+
         ///////控制确定///////////
-        controlConfirm(e)
-        {
+        controlConfirm(e) {
           console.log(e)
           console.log(e.serviceBody)
           console.log(e.serviceBody.params.length)
@@ -349,13 +371,13 @@
             json += '"' + e.serviceBody.params[i].key + '":"' + e.serviceBody.params[i].value + '",';
           }
           json += '"' + "serviceName" + '":"' + e.serviceName + '",';
-          json += '"' + "methodName" + '":"' + e.serviceBody.methodName+ '"' ;
+          json += '"' + "methodName" + '":"' + e.serviceBody.methodName + '"';
           json += '}';
           console.log(json)
-          var requestId=parseInt(Math.random()*(10000-10+1)+10,10);
+          var requestId = parseInt(Math.random() * (10000 - 10 + 1) + 10, 10);
           $.ajax({
-            headers: {"Authorization": "Bearer"+localStorage.getItem("auth")},
-            url: "/api/v1/deviceaccess/rpc/"+vm.control.deviceid+'/'+requestId,
+            headers: {"Authorization": "Bearer" + localStorage.getItem("auth")},
+            url: "/api/v1/deviceaccess/rpc/" + vm.control.deviceid + '/' + requestId,
             data: json,
             contentType: "application/json; charset=utf-8",//post请求必须
             dataType: "text",
@@ -374,8 +396,7 @@
         },
 
         //时间戳和年月日的转化
-        timestamp(int)
-        {
+        timestamp(int) {
 
           var val = JSON.parse(int)
           let date = new Date(val);
@@ -390,10 +411,48 @@
           m = m < 10 ? ('0' + m) : m;
           // let s = date.getSeconds();
           // s = s < 10 ? ('0' + s) : s;
-          return y + '-' + MM + '-' + d + ' ' + h + ':' + m ;
-        }
-        }
+          return y + '-' + MM + '-' + d + ' ' + h + ':' + m;
+        },
 
+      //提交历史数据的时间选择
+    /*    subTime() {
+          var vm = this;
+          if (vm.startTime === "" || vm.endTime === "") {
+            this.$message({
+              type: 'info',
+              message: '起始时间无效！'
+            });
+          } else {
+            var startStamp = new Date(vm.startTime).getTime();
+            var endStamp = new Date(vm.endTime).getTime();
+            if (startStamp > endStamp) {
+              this.$message({
+                type: 'info',
+                message: '起始时间无效！'
+              });
+               } else {
+                var allKey;
+                console.log(vm.deviceID);
+                $.ajax({
+                  headers: {"Authorization": "Bearer" + localStorage.getItem("auth")},
+                  url: "/api/data/allKeys/" + vm.deviceID,
+                  type: "GET",
+                  dataType: "json",
+                  contentType: 'application/json;charset=UTF-8',
+                  async: false,
+                  success: function (msg) {
+                    allKey = msg;//用于记录所有键值
+                    console.log(allKey);
+
+                  },
+                  error: function (err) {
+                    console.log(err);
+                  }
+                });
+              }
+            }
+          }*/
+      }
     }
 </script>
 

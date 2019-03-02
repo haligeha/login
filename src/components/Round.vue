@@ -32,11 +32,7 @@
             player:null
         }
       },
-    /*  created: function () {
-        this.getResources()
-        console.log("created")
 
-      },*/
       mounted: function () {
      // this.getResources()
         this.getRes()
@@ -105,46 +101,7 @@
             }
           })
         },
-    /*    getResource:function(){
-          var vm=this;
 
-          for(var i=0;i<vm.resources.length;i++){
-            console.log(vm.resources[i]);
-            var player2= new Clappr.Player({
-          //    source:"rtmp://10.112.17.185/oflaDemo/haikang1",
-              source: vm.resources[i],
-              parentId: '#player',
-              plugins: [RTMP],
-              autoPlay: !0,
-              width: 800,
-              height: 800,
-              rtmpConfig: {
-                scaling: 'stretch',
-                playbackType: 'live',
-                bufferTime: 1,
-                startLevel: 0,
-                switchRules: {
-                  'SufficientBandwidthRule': {
-                    'bandwidthSafetyMultiple': 1.15,
-                    'minDroppedFps': 2
-                  },
-                  'InsufficientBufferRule': {
-                    'minBufferLength': 2
-                  },
-                  'DroppedFramesRule': {
-                    'downSwitchByOne': 10,
-                    'downSwitchByTwo': 20,
-                    'downSwitchToZero': 24
-                  },
-                  'InsufficientBandwidthRule': {
-                    'bitrateMultiplier': 1.15
-                  }
-                }
-              }
-            })
-            console.log("player"+i)
-          }
-        },*/
         nextOne:function(){
          var vm=this;
          var m = vm.index+1

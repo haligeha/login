@@ -11,6 +11,10 @@ import Goods from '@/components/Goods.vue'
 import gis from '@/components/gis.vue'
 import DeviceList from '@/components/DeviceList.vue'
 import Round from '@/components/Round.vue'
+import All from '@/components/All.vue'
+import Done from '@/components/Done.vue'
+import Undone from '@/components/Undone.vue'
+
 Vue.use(Router);
 
 const router = new Router({
@@ -52,10 +56,10 @@ const router = new Router({
           component: Tables
         },
 
-        {
+     /*   {
           path: '/uielement',
           component: UIElement
-        },
+        },*/
 
         {
           path: '/calendar',
@@ -76,7 +80,19 @@ const router = new Router({
         {
           path: '/deviceList',
           component: DeviceList
-        }
+        },
+        {
+          path:'/all',
+          component:All
+        },
+        {
+          path:'/undone',
+          component:Undone
+        },
+        {
+          path:'/done',
+          component:Done
+        },
       ],redirect:'/gis'
     }
   ],
