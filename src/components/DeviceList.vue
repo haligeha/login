@@ -82,7 +82,7 @@
       <el-dialog title="设备详情":visible.sync="dialogDeviceDetail" append-to-body @close='handleClose'>
         <el-input v-model="form.dialogDeviceDetail" :disabled="true" size="mini"></el-input>
 
-     <!--   <h4 >-----历史数据-----</h4>
+       <h4 >-----历史数据-----</h4>
         <label>起始时间：</label>
         <el-date-picker
           v-model="startTime"
@@ -95,7 +95,7 @@
           type="datetime"
           placeholder="选择日期时间">
         </el-date-picker>
-        <i class="el-icon-search" @click="subTime"></i>-->
+        <i class="el-icon-search" @click="subTime"></i>
         <h4>-----最新遥测-----</h4>
         <el-table :data="DeviceDetailTableData">
           <el-table-column property="updateTime" label="最后更新时间" ></el-table-column>
@@ -415,7 +415,7 @@
         },
 
       //提交历史数据的时间选择
-    /*    subTime() {
+      subTime() {
           var vm = this;
           if (vm.startTime === "" || vm.endTime === "") {
             this.$message({
@@ -432,13 +432,12 @@
               });
                } else {
                 var allKey;
-                console.log(vm.deviceID);
+                console.log(vm.deviceID);i
                 $.ajax({
                   headers: {"Authorization": "Bearer" + localStorage.getItem("auth")},
-                  url: "/api/data/allKeys/" + vm.deviceID,
+                  url: "/api/data/getKeyAttribute/" + vm.deviceID,
                   type: "GET",
                   dataType: "json",
-                  contentType: 'application/json;charset=UTF-8',
                   async: false,
                   success: function (msg) {
                     allKey = msg;//用于记录所有键值
@@ -451,7 +450,7 @@
                 });
               }
             }
-          }*/
+          }
       }
     }
 </script>

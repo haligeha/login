@@ -12,7 +12,7 @@
         </ol>
 
       </div>
-      <el-select v-model="value" placeholder="请选择" @change="video(value)">
+      <el-select v-model="value" placeholder="请选择" @change="video(value)" id="splitSelect">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -20,15 +20,40 @@
           :value="item.value">
         </el-option>
       </el-select>
-   <!--   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-      <el-select v-model="value5" multiple placeholder="请选择">
+
+      <div id="sourcediv1" v-show="false">
+      <el-select v-model="sourceValue" multiple :multiple-limit=1 placeholder="请选择视频源">
         <el-option
           v-for="item in option"
           :key="item.value"
           :label="item.label"
           :value="item.value">
         </el-option>
-      </el-select>-->
+      </el-select>
+      </div>
+
+      <div id="sourcediv2" v-show="false">
+        <el-select v-model="sourceValue2" multiple  placeholder="请选择视频源" :multiple-limit=4>
+          <el-option
+            v-for="item in option2"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
+
+      <div id="sourcediv3" v-show="false">
+        <el-select v-model="sourceValue3" multiple placeholder="请选择视频源" >
+          <el-option
+            v-for="item in option3"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
+
       <div id="video1" v-show="false">
         <div id="player">
 
@@ -48,7 +73,7 @@
 
         </div>
       </div>
-      <div id="video3" v-show="false">
+     <div id="video3" v-show="false">
 
           <div id="player4">
           </div>
@@ -118,8 +143,51 @@
         }, {
           value: '选项5',
           label: '北京烤鸭'
+        }, {
+          value: '选项6',
+          label: '山西烤鸭'
         }],
-        value5: [],
+        sourceValue: [],
+        option2: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }, {
+          value: '选项6',
+          label: '山西烤鸭'
+        }],
+        sourceValue2: [],
+        option3: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }, {
+          value: '选项6',
+          label: '山西烤鸭'
+        }],
+        sourceValue3: [],
       }
     },
     created: function () {
@@ -132,13 +200,14 @@
         parentId: '#player',
         plugins: [RTMP],
         autoPlay: !0,
-        width:800,
-        height:800,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+        width:960,
+        height:540,
+        /* plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -167,9 +236,15 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player2',
         plugins: [RTMP],
+      /*  plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:400,
-        height:400,
+        width:480,
+        height:270,
         // marqueePluginConfig:{
         //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
         //     duration:10000,
@@ -203,9 +278,17 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player3',
         plugins: [RTMP],
+        /*   plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+           textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+           duration:10000,
+           direction:'left'
+         },*/
         autoPlay: !0,
-        width:400,
-        height:400,
+     //   width:400,
+     //   height:400,
+        width:480,
+        height:270,
         // marqueePluginConfig:{
         //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
         //     duration:10000,
@@ -235,13 +318,21 @@
           }
         }
       })
-      var player4 = new Clappr.Player({
+     var player4 = new Clappr.Player({
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player4',
         plugins: [RTMP],
+  /*      plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:600,
-        height:600,
+       // width:600,
+        //height:600,
+        width:640,
+        height:360,
         // marqueePluginConfig:{
         //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
         //     duration:10000,
@@ -275,9 +366,17 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player5',
         plugins: [RTMP],
+       /* plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:300,
-        height:300,
+       // width:300,
+       // height:300,
+        width:320,
+        height:180,
         // marqueePluginConfig:{
         //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
         //     duration:10000,
@@ -308,17 +407,18 @@
         }
       })
       var player6 = new Clappr.Player({
-        source: 'rtmp://10.112.17.185/oflaDemo/haikang1',
+        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player6',
         plugins: [RTMP],
+      /*  plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:300,
-        height:300,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+        width:320,
+        height:180,
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -347,14 +447,15 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player7',
         plugins: [RTMP],
+        /*plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:300,
-        height:300,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+        width:320,
+        height:180,
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -383,9 +484,15 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player8',
         plugins: [RTMP],
+      /*  plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:300,
-        height:300,
+        width:320,
+        height:180,
         // marqueePluginConfig:{
         //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
         //     duration:10000,
@@ -419,14 +526,15 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player9',
         plugins: [RTMP],
+        /*plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:300,
-        height:300,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+        width:320,
+        height:180,
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -455,14 +563,15 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player21',
         plugins: [RTMP],
+       /* plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:400,
-        height:400,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+        width:480,
+        height:270,
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -491,14 +600,15 @@
         source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
         parentId: '#player31',
         plugins: [RTMP],
+        /*plugins: [MarqueeOverlay,RTMP],
+        marqueePluginConfig:{
+          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          duration:10000,
+          direction:'left'
+        },*/
         autoPlay: !0,
-        width:400,
-        height:400,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+        width:480,
+        height:270,
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -629,25 +739,38 @@
       },
       */
 
-      video:function(a){
-        if(a=="1"){
-          document.getElementById("video1").style.display="block";
-          document.getElementById("video2").style.display="none";
-          document.getElementById("video3").style.display="none";
-          console.log(document.getElementById("video1"));
+      clear:function(){
+        var vm=this;
+        vm.sourceValue=[];
+      },
 
+      video:function(a){
+        if(a=="1") {
+          document.getElementById("video1").style.display = "block";
+          document.getElementById("sourcediv1").style.display = "block";
+          document.getElementById("sourcediv2").style.display = "none";
+          document.getElementById("sourcediv3").style.display = "none";
+          document.getElementById("video2").style.display = "none";
+          document.getElementById("video3").style.display = "none";
+          console.log(document.getElementById("video1"));
         }
-        else if(a=="2"){
-          document.getElementById("video1").style.display="none";
-          document.getElementById("video2").style.display="block";
-          document.getElementById("video3").style.display="none";
-          console.log(document.getElementById("video2"));
-        }
-        else if(a=="3"){
-          document.getElementById("video1").style.display="none";
-          document.getElementById("video3").style.display="block";
-          document.getElementById("video2").style.display="none";
-        }
+           else if(a=="2"){
+              document.getElementById("video1").style.display="none";
+              document.getElementById("video2").style.display="block";
+              document.getElementById("video3").style.display="none";
+              document.getElementById("sourcediv2").style.display="block";
+              document.getElementById("sourcediv1").style.display="none";
+              document.getElementById("sourcediv3").style.display="none";
+              console.log(document.getElementById("video2"));
+            }
+          else if(a=="3"){
+           document.getElementById("video1").style.display="none";
+           document.getElementById("video3").style.display="block";
+           document.getElementById("video2").style.display="none";
+           document.getElementById("sourcediv3").style.display="block";
+           document.getElementById("sourcediv2").style.display="none";
+           document.getElementById("sourcediv1").style.display="none";
+         }
       }
     }
   }
@@ -668,7 +791,7 @@
   #play2{
     margin-left:20px;
   }
-  #player3{
+ /* #player3{
     margin-left:400px;
     margin-top:-400px;
   }
@@ -679,7 +802,20 @@
   #player31{
     margin-left:400px;
     margin-top:-400px;
+  }*/
+  #player3{
+    margin-left:480px;
+    margin-top:-270px;
   }
+  #player21{
+    margin-left:0px;
+    margin-top:0px;
+  }
+  #player31{
+    margin-left:480px;
+    margin-top:-270px;
+  }
+  /*
   #player4{
     margin-left:20px;
   }
@@ -703,8 +839,69 @@
     margin-left:620px;
     margin-top:-300px;
   }
+  */
+  #player4{
+    margin-left:0px;
+  }
+  #player5{
+    margin-left:640px;
+    margin-top:-360px;
+  }
+  #player6{
+    margin-left:640px;
+    margin-top:0px;
+  }
+  #player7{
+    margin-left:0px;
+    margin-top:0px;
+  }
+  #player8{
+    margin-left:320px;
+    margin-top:-180px;
+  }
+  #player9{
+    margin-left:640px;
+    margin-top:-180px;
+  }
   #buttons{
     margin-top:20px;
     margin-left:20px;
+  }
+  #sourceSelect{
+    width:200px;
+  }
+  #sourcediv1{
+    display:inline;
+    float: right;
+    margin-right:600px;
+  }
+
+  #sourcediv1 .el-select{
+    width:150px;
+  }
+
+  #sourcediv2{
+    display:inline;
+    float: right;
+    margin-right:500px;
+  }
+
+  #sourcediv2 .el-select{
+    width:300px;
+  }
+
+  #sourcediv3{
+    display:inline;
+    float: right;
+    margin-right:400px;
+  }
+
+  #sourcediv3 .el-select{
+    width:400px;
+  }
+
+  #splitSelect{
+    margin-top: 10px;
+    width:100px;
   }
 </style>

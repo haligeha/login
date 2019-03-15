@@ -29,7 +29,8 @@
             resource: '',
             resources:[],
             index:0,
-            player:null
+            player:null,
+            sourceRe:''
         }
       },
 
@@ -63,16 +64,17 @@
         },*/
         getRes:function(){
           var vm=this
+          vm.sourceRe='rtmp://39.104.186.210/oflaDemo/haikang1'
           vm.player = new Clappr.Player({
-            source: "rtmp://39.104.186.210/oflaDemo/haikang1",
+            source: sourceRe,
             parentId: '#player',
-       //     plugins: [RTMP],
-            plugins: [MarqueeOverlay,RTMP],
+            plugins: [RTMP],
+           /* plugins: [MarqueeOverlay,RTMP],
             marqueePluginConfig:{
               textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
               duration:10000,
               direction:'left'
-            },
+            },*/
             autoPlay: !0,
             width: 800,
             height: 800,
