@@ -40,6 +40,20 @@ const router = new Router({
         {
           path: '/splitScreen',
           component: splitScreen,
+    /*      children:[
+            {
+              path: './oneScreen',
+              component: oneScreen
+            },
+            {
+              path: './fourScreen',
+              component: fourScreen
+            },
+            {
+              path: './sixScreen',
+              component: sixScreen
+            }
+          ]*/
 
         },
         {

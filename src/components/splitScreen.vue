@@ -21,7 +21,7 @@
         </el-option>
       </el-select>
 
-      <div id="sourcediv1" v-show="false">
+     <div id="sourcediv1" v-show="false">
       <el-select v-model="sourceValue" multiple :multiple-limit=1 placeholder="请选择视频源">
         <el-option
           v-for="item in option"
@@ -93,7 +93,6 @@
           <div id="player9">
           </div>
       </div>
-
     <!--  <div id="buttons">
         <input type="button" value="上" @click="up()">
         <input type="button" value="下" @click="down()">
@@ -102,8 +101,15 @@
         <input type="button" value="注册" @click="sub()">
         <input type="button" value="录制" @click="record()">
         <input type="button" value="查看录像" @click="records()">
-
       </div>-->
+
+      <div id="buttons">
+        <el-button type="primary" @click="up()">上</el-button>
+        <el-button type="primary" @click="down()">下</el-button>
+        <el-button type="primary" @click="left()">左</el-button>
+        <el-button type="primary" @click="right()">右</el-button>
+      </div>
+
     </div>
     <!-- /. PAGE INNER  -->
   </div>
@@ -113,6 +119,9 @@
 <script>
 
   export default {
+/*    components: {
+      oneScreen
+    },*/
     data() {
       return {
         options: [{
@@ -128,64 +137,64 @@
           }
         ],
         value: '',
-        option: [{
+       option: [{
           value: '选项1',
-          label: '黄金糕'
+          label: '源1'
         }, {
           value: '选项2',
-          label: '双皮奶'
+          label: '源2'
         }, {
           value: '选项3',
-          label: '蚵仔煎'
+          label: '源3'
         }, {
           value: '选项4',
-          label: '龙须面'
+          label: '源4'
         }, {
           value: '选项5',
-          label: '北京烤鸭'
+          label: '源5'
         }, {
           value: '选项6',
-          label: '山西烤鸭'
+          label: '源6'
         }],
         sourceValue: [],
         option2: [{
           value: '选项1',
-          label: '黄金糕'
+          label: '源1'
         }, {
           value: '选项2',
-          label: '双皮奶'
+          label: '源2'
         }, {
           value: '选项3',
-          label: '蚵仔煎'
+          label: '源3'
         }, {
           value: '选项4',
-          label: '龙须面'
+          label: '源4'
         }, {
           value: '选项5',
-          label: '北京烤鸭'
+          label: '源5'
         }, {
           value: '选项6',
-          label: '山西烤鸭'
+          label: '源6'
         }],
         sourceValue2: [],
         option3: [{
           value: '选项1',
-          label: '黄金糕'
+          label: '源1'
         }, {
           value: '选项2',
-          label: '双皮奶'
+          label: '源2'
         }, {
           value: '选项3',
-          label: '蚵仔煎'
+          label: '源3'
         }, {
           value: '选项4',
-          label: '龙须面'
+          label: '源4'
         }, {
           value: '选项5',
-          label: '北京烤鸭'
+          label: '源5'
         }, {
           value: '选项6',
-          label: '山西烤鸭'
+          label: '源6'
         }],
         sourceValue3: [],
       }
@@ -196,7 +205,7 @@
     },
     mounted: function () {
       var player2 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player',
         plugins: [RTMP],
         autoPlay: !0,
@@ -204,7 +213,7 @@
         height:540,
         /* plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -233,12 +242,12 @@
         }
       })
       var player = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player2',
         plugins: [RTMP],
       /*  plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -246,7 +255,7 @@
         width:480,
         height:270,
         // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
+        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang2'",
         //     duration:10000,
         //     direction:'left'
         // },
@@ -275,12 +284,12 @@
         }
       })
       var player3 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player3',
         plugins: [RTMP],
         /*   plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-           textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+           textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
            duration:10000,
            direction:'left'
          },*/
@@ -289,11 +298,7 @@
      //   height:400,
         width:480,
         height:270,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -319,12 +324,12 @@
         }
       })
      var player4 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player4',
         plugins: [RTMP],
   /*      plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -334,7 +339,7 @@
         width:640,
         height:360,
         // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
+        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang2'",
         //     duration:10000,
         //     direction:'left'
         // },
@@ -363,12 +368,12 @@
         }
       })
       var player5 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player5',
         plugins: [RTMP],
        /* plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -377,11 +382,7 @@
        // height:300,
         width:320,
         height:180,
-        // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
-        //     duration:10000,
-        //     direction:'left'
-        // },
+
         rtmpConfig: {
           scaling: 'stretch',
           playbackType: 'live',
@@ -407,12 +408,12 @@
         }
       })
       var player6 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player6',
         plugins: [RTMP],
       /*  plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -444,12 +445,12 @@
         }
       })
       var player7 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player7',
         plugins: [RTMP],
         /*plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -481,12 +482,12 @@
         }
       })
       var player8 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player8',
         plugins: [RTMP],
       /*  plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -494,7 +495,7 @@
         width:320,
         height:180,
         // marqueePluginConfig:{
-        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang1'",
+        //     textContent:"source:'rtmp://10.112.17.185/oflaDemo/haikang2'",
         //     duration:10000,
         //     direction:'left'
         // },
@@ -523,12 +524,12 @@
         }
       })
       var player9 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player9',
         plugins: [RTMP],
         /*plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -560,12 +561,12 @@
         }
       })
       var player21 = new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player21',
         plugins: [RTMP],
        /* plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -597,12 +598,12 @@
         }
       })
       var player31= new Clappr.Player({
-        source: 'rtmp://39.104.186.210/oflaDemo/haikang1',
+        source: 'rtmp://10.28.148.217/oflaDemo/haikang2',
         parentId: '#player31',
         plugins: [RTMP],
         /*plugins: [MarqueeOverlay,RTMP],
         marqueePluginConfig:{
-          textContent:"rtmp://39.104.186.210/oflaDemo/haikang1",
+          textContent:"rtmp://10.28.148.217/oflaDemo/haikang2",
           duration:10000,
           direction:'left'
         },*/
@@ -637,7 +638,6 @@
     },
     methods: {
 
-/*
       up: function () {
         $.ajax({
           // url:"http://10.128.210.216:8083/control?cmd=up&status=0",
@@ -727,7 +727,7 @@
       },
       records: function () {
         $.ajax({
-          url: "http://10.112.17.185:8083/records?rtmp=rtmp://localhost/oflaDemo/haikang1",
+          url: "http://10.112.17.185:8083/records?rtmp=rtmp://localhost/oflaDemo/haikang2",
           type: "GET",
           success: function (resp) {
             console.log(resp);
@@ -737,14 +737,8 @@
           }
         });
       },
-      */
 
-      clear:function(){
-        var vm=this;
-        vm.sourceValue=[];
-      },
-
-      video:function(a){
+     video:function(a){
         if(a=="1") {
           document.getElementById("video1").style.display = "block";
           document.getElementById("sourcediv1").style.display = "block";
